@@ -9,11 +9,13 @@
   },
   "private": true,
   "dependencies": {
+    "import-conductor": "^2.4.0",
     "inquirer": "^8.2.4",
     "inquirer-autocomplete-prompt": "^2.0.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@nrwl/angular": "^14.1.7",
     "@nrwl/cli": "14.1.7",
     "@nrwl/devkit": "14.1.7",
     "@nrwl/eslint-plugin-nx": "14.1.7",

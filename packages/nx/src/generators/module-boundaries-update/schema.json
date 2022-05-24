@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "module-boundaries-update",
+  "type": "object",
+  "properties": {
+    "context": {
+      "type": "string",
+      "description": "Library context"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Library scope"
+    },
+    "type": {
+      "type": "string",
+      "description": "Library type"
+    }
+  },
+  "required": []
+}

@@ -1,7 +1,7 @@
-import * as inquirer from 'inquirer';
-import * as chalk from 'chalk';
 import { formatFiles, readJson, Tree, updateJson } from '@nrwl/devkit';
 import { moveGenerator } from '@nrwl/workspace/generators';
+import * as inquirer from 'inquirer';
+import * as chalk from 'chalk';
 
 import typePrompt from '../prompts/type.prompt';
 import scopePrompt from '../prompts/scope.prompt';
@@ -11,11 +11,12 @@ import { ScopeType } from '../model/scope-type';
 import { ProjectTypes } from '../model/project-types';
 import { extractName } from '../utils/projectname';
 import moduleBoundariesValidate from '../module-boundaries-validate/generator';
-import { MoveSchema } from './schema';
 import { applicationPrompt } from '../prompts/application.prompt';
 
-export default async function move(tree: Tree, schema: MoveSchema) {
-  let { projectName, destination } = schema;
+import { MoveSchema } from './schema';
+
+export default async function move(tree: Tree, options: MoveSchema) {
+  let { projectName, destination } = options;
 
   if (!projectName) {
     console.log('Choose the project you want to move');
@@ -36,7 +37,7 @@ export default async function move(tree: Tree, schema: MoveSchema) {
     if (isApplication) {
       name = extractName(projectName, ProjectTypes.APP);
     } else {
-      let targetScope = await scopePrompt(
+      const targetScope = await scopePrompt(
         tree,
         'Which scope do you want to move your project to',
         targetContext
@@ -99,5 +100,4 @@ export default async function move(tree: Tree, schema: MoveSchema) {
 
   await formatFiles(tree);
   await moduleBoundariesValidate(tree, { fix: true });
-  return async () => {};
 }

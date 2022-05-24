@@ -17,6 +17,16 @@
       "factory": "./src/generators/module-boundaries-validate/generator",
       "schema": "./src/generators/module-boundaries-validate/schema.json",
       "description": "module-boundaries-validate generator"
+    },
+    "app": {
+      "factory": "./src/generators/app/generator",
+      "schema": "./src/generators/app/schema.json",
+      "description": "app generator"
+    },
+    "module-boundaries-update": {
+      "factory": "./src/generators/module-boundaries-update/generator",
+      "schema": "./src/generators/module-boundaries-update/schema.json",
+      "description": "module-boundaries-update generator"
     }
   }
 }

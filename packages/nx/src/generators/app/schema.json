@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "app",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Application name"
+    },
+    "context": {
+      "type": "string",
+      "description": "Application context (eg b2e, aro, mcs, mcm,...)"
+    },
+    "theme-selector": {
+      "type": "boolean",
+      "description": "If true a theme prompt shows up that lets you select the theme. If false, the light theme and the default ink is applied"
+    }
+  },
+  "required": []
+}
