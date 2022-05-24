@@ -10,6 +10,7 @@
   "private": true,
   "dependencies": {
     "inquirer": "^8.2.4",
+    "inquirer-autocomplete-prompt": "^2.0.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

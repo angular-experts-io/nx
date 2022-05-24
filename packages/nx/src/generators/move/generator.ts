@@ -1,0 +1,103 @@
+import * as inquirer from 'inquirer';
+import * as chalk from 'chalk';
+import { formatFiles, readJson, Tree, updateJson } from '@nrwl/devkit';
+import { moveGenerator } from '@nrwl/workspace/generators';
+
+import typePrompt from '../prompts/type.prompt';
+import scopePrompt from '../prompts/scope.prompt';
+import { projectPrompt } from '../prompts/project.prompt';
+import { contextPrompt } from '../prompts/context.prompt';
+import { ScopeType } from '../model/scope-type';
+import { ProjectTypes } from '../model/project-types';
+import { extractName } from '../util/projectname';
+import moduleBoundariesValidate from '../module-boundaries-validate';
+import { MoveSchema } from './schema';
+import { applicationPrompt } from '../prompts/application.prompt';
+
+export default async function move(tree: Tree, schema: MoveSchema) {
+  let { projectName, destination } = schema;
+
+  if (!projectName) {
+    console.log('Choose the project you want to move');
+    projectName = await projectPrompt(tree);
+  }
+
+  if (!destination) {
+    const angularJSON = readJson(tree, './angular.json');
+    const isApplication = angularJSON.projects[projectName].includes('apps');
+
+    let targetContext = await contextPrompt(
+      tree,
+      'To which context do you want to move your project?'
+    );
+    destination = `${targetContext}/`;
+    let name;
+
+    if (isApplication) {
+      name = extractName(projectName, ProjectTypes.APP);
+    } else {
+      let targetScope = await scopePrompt(
+        tree,
+        'Which scope do you want to move your project to',
+        targetContext
+      );
+
+      if (targetScope === ScopeType.APP_SPECIFIC) {
+        const app = await applicationPrompt(tree, targetContext);
+        targetContext = `${targetContext}/${app}`;
+      }
+
+      const targetType = await typePrompt(
+        tree,
+        'Which type does your project have after the move'
+      );
+
+      destination =
+        targetScope === ScopeType.APP_SPECIFIC
+          ? `${targetContext}/${targetType}/`
+          : `${targetContext}/${targetScope}/${targetType}/`;
+      name = extractName(projectName, ProjectTypes.LIBRARY);
+    }
+
+    const changeName = await inquirer.prompt({
+      type: 'list',
+      name: 'yes',
+      message: `Do you want to keep ${chalk.blue(
+        name
+      )} as name, or do you want to change the name?`,
+      choices: [
+        { name: `Keep ${name}`, value: false },
+        { name: `Let me enter a new name`, value: true },
+      ],
+    });
+
+    if (changeName.yes) {
+      const targetName = await inquirer.prompt({
+        name: 'value',
+        message: 'Please enter a new name',
+      });
+      name = targetName.value;
+    }
+    destination += name;
+  }
+
+  await moveGenerator(tree, {
+    projectName,
+    destination,
+    updateImportPath: true,
+    skipFormat: true,
+  });
+
+  await updateJson(
+    tree,
+    `libs/${destination}/ng-package.json`,
+    (projectJson) => {
+      projectJson.dest = `../../../../../dist/libs/${destination}`;
+      return projectJson;
+    }
+  );
+
+  await formatFiles(tree);
+  await moduleBoundariesValidate(tree, { fix: true });
+  return async () => {};
+}

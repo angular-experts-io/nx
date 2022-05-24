@@ -7,6 +7,11 @@
       "factory": "./src/generators/nx/generator",
       "schema": "./src/generators/nx/schema.json",
       "description": "nx generator"
+    },
+    "move": {
+      "factory": "./src/generators/move/generator",
+      "schema": "./src/generators/move/schema.json",
+      "description": "move generator"
     }
   }
 }
