@@ -9,8 +9,8 @@ import { projectPrompt } from '../prompts/project.prompt';
 import { contextPrompt } from '../prompts/context.prompt';
 import { ScopeType } from '../model/scope-type';
 import { ProjectTypes } from '../model/project-types';
-import { extractName } from '../util/projectname';
-import moduleBoundariesValidate from '../module-boundaries-validate';
+import { extractName } from '../utils/projectname';
+import moduleBoundariesValidate from '../module-boundaries-validate/generator';
 import { MoveSchema } from './schema';
 import { applicationPrompt } from '../prompts/application.prompt';
 

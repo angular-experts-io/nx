@@ -12,6 +12,11 @@
       "factory": "./src/generators/move/generator",
       "schema": "./src/generators/move/schema.json",
       "description": "move generator"
+    },
+    "module-boundaries-validate": {
+      "factory": "./src/generators/module-boundaries-validate/generator",
+      "schema": "./src/generators/module-boundaries-validate/schema.json",
+      "description": "module-boundaries-validate generator"
     }
   }
 }
