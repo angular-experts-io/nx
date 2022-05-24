@@ -4,11 +4,12 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "build": "nx build",
+    "build": "nx build --projectName=nx",
     "test": "nx test"
   },
   "private": true,
   "dependencies": {
+    "inquirer": "^8.2.4",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
