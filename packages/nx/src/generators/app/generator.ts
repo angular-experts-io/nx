@@ -119,11 +119,6 @@ async function promptMissingSchemaProperties(
   tree: Tree,
   schema: AppGeneratorOptions
 ) {
-  console.log(
-    `Let's create an application, the final name will follow ${chalk.grey(
-      '@mobi/<context>-<name>-rwc'
-    )} pattern`
-  );
   if (!schema.context) {
     schema.context = (
       await inquirer.prompt([
@@ -131,7 +126,7 @@ async function promptMissingSchemaProperties(
           type: 'list',
           name: 'context',
           message: 'What context does your application belong to?',
-          choices: getContexts(tree),
+          choices: await getContexts(tree),
         },
       ])
     ).context;
@@ -143,7 +138,7 @@ async function promptMissingSchemaProperties(
           type: 'input',
           name: 'name',
           message:
-            'What is the application name? (eg schreibtisch, do not provide "-rwc" suffix)',
+            'What is the application name?',
         },
       ])
     ).name;
@@ -264,11 +259,7 @@ function validateSchema(schema: AppGeneratorOptions) {
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
     );
   }
-  if (name.endsWith('-rwc')) {
-    throw new Error(
-      `The app name "${name}" should not end with "-rwc" as that will be appended automatically.`
-    );
-  }
+
   if (name.endsWith('-')) {
     throw new Error(`The app name "${name}" should not end with "-"`);
   }
