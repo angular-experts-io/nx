@@ -60,7 +60,7 @@ export default async function generateWorkspaceApp(
 async function promptMissingSchemaProperties(
   tree: Tree,
   schema: AppGeneratorOptions
-) {
+): Promise<void> {
   if (!schema.context) {
     schema.context = (
       await inquirer.prompt([
@@ -86,7 +86,7 @@ async function promptMissingSchemaProperties(
   }
 }
 
-function validateName(name: string) {
+function validateName(name: string): void {
   if (name.includes(' ')) {
     throw new Error(
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
@@ -102,7 +102,7 @@ function removeInitialNavigationConfig(
   tree: Tree,
   context: string,
   name: string
-) {
+): void {
   const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
   let moduleContent = tree.read(modulePath).toString();
   moduleContent = moduleContent.replace(
@@ -112,7 +112,7 @@ function removeInitialNavigationConfig(
   tree.write(modulePath, moduleContent);
 }
 
-function removeWelcomeComponent(tree: Tree, context: string, name: string) {
+function removeWelcomeComponent(tree: Tree, context: string, name: string): void {
   const srcPath = `apps/${context}/${name}/src/app/`;
   tree.delete(`${srcPath}nx-welcome.component.ts`);
 
@@ -142,7 +142,7 @@ function removeWelcomeComponent(tree: Tree, context: string, name: string) {
   tree.write(specPath, specContent);
 }
 
-async function updateProjectTags(tree: Tree, context: string, name: string) {
+async function updateProjectTags(tree: Tree, context: string, name: string): Promise<void> {
   await updateJson(
     tree,
     `apps/${context}/${name}-e2e/project.json`,
@@ -157,7 +157,7 @@ export async function updatePackageJSONScripts(
   tree: Tree,
   context: string,
   name: string
-) {
+): Promise<void> {
   const projectName = `${context}-${name}`;
   await updateJson(tree, `package.json`, (packageJson) => {
     if (!packageJson.scripts) {
@@ -189,7 +189,7 @@ async function organizeAppModuleImportStatements(
   tree: Tree,
   context: string,
   name: string
-) {
+): Promise<void> {
   const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
   const appModuleContent = tree.read(modulePath).toString();
   const appModuleContentWithOrganizedImports = await organizeImports(

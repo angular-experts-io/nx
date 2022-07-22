@@ -7,7 +7,7 @@ interface ConfigFile {
   contexts?: string[];
 }
 
-export async function createConfigFileIfNonExisting(tree: Tree) {
+export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   const configFile: ConfigFile = configurationFileBuffer
     ? JSON.parse(configurationFileBuffer.toString())

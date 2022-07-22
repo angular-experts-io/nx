@@ -1,17 +1,26 @@
-import { Tree, readJson, updateJson } from '@nrwl/devkit';
+import {Tree, readJson, updateJson} from '@nrwl/devkit';
 
-import { ModuleBoundariesUpdateGeneratorOptions } from './schema';
+import {ModuleBoundariesUpdateGeneratorOptions} from './schema';
 
 const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
+
+interface GroupedTags {
+  context: string[];
+  scope: string[];
+  type: string[];
+}
 
 export default async function updateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesUpdateGeneratorOptions
 ) {
-  const json = await readJson(tree, '.eslintrc.json');
+  const esLintConfiguration = await readJson(tree, '.eslintrc.json');
+  const depConstraints = getDepConstraints(esLintConfiguration);
+  const groupedTags = getGroupedTags(depConstraints);
 
-  const groupedTags = getGroupedTags(getDepConstraints(json));
-  if (schema.context && !groupedTags?.context?.includes(schema.context)) {
+  const {context, scope} = schema;
+
+  if (isNewContext(context, groupedTags)) {
     await updateJson(tree, '.eslintrc.json', (json) => {
       getDepConstraints(json).unshift({
         sourceTag: `context:${schema.context}`,
@@ -20,10 +29,9 @@ export default async function updateModuleBoundaries(
       return json;
     });
   }
+
   if (
-    schema.scope &&
-    !['public', 'shared'].includes(schema.scope) &&
-    !groupedTags?.scope?.includes(schema.scope)
+    isNewScope(scope, groupedTags)
   ) {
     await updateJson(tree, '.eslintrc.json', (json) => {
       getDepConstraints(json).unshift({
@@ -39,7 +47,7 @@ export default async function updateModuleBoundaries(
   }
 }
 
-function getGroupedTags(constraints: any): any {
+function getGroupedTags(constraints): GroupedTags {
   return Array.from(
     new Set(
       constraints.flatMap((c) => [
@@ -56,11 +64,23 @@ function getGroupedTags(constraints: any): any {
       }
       return groupedByCategory;
     },
-    { context: [], scope: [], type: [] }
-  );
+    {context: [], scope: [], type: []}
+  ) as GroupedTags;
 }
 
-function getDepConstraints(json: any) {
-  return json?.overrides.find((o) => o?.rules?.[ENFORCE_MODULE_BOUNDARIES])
-    ?.rules?.[ENFORCE_MODULE_BOUNDARIES]?.[1]?.depConstraints;
+function getDepConstraints(esLintConfiguration) {
+  return esLintConfiguration?.overrides.find(
+    (o) => o?.rules?.[ENFORCE_MODULE_BOUNDARIES]
+  )?.rules?.[ENFORCE_MODULE_BOUNDARIES]?.[1]?.depConstraints;
 }
+
+function isNewContext(context: string, groupedTags: GroupedTags): boolean {
+  return context && !groupedTags?.context?.includes(context);
+}
+
+function isNewScope(scope: string, groupedTags: GroupedTags) {
+  return scope &&
+    !['public', 'shared'].includes(scope) &&
+    !groupedTags?.scope?.includes(scope);
+}
+
