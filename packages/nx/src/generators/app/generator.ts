@@ -153,13 +153,16 @@ async function updateProjectTags(tree: Tree, context: string, name: string) {
   );
 }
 
-async function updatePackageJSONScripts(
+export async function updatePackageJSONScripts(
   tree: Tree,
   context: string,
   name: string
 ) {
   const projectName = `${context}-${name}`;
   await updateJson(tree, `package.json`, (packageJson) => {
+    if (!packageJson.scripts) {
+      packageJson.scripts = {};
+    }
     packageJson.scripts[
       `serve:${projectName}:app`
     ] = `nx serve --project ${projectName} -o`;

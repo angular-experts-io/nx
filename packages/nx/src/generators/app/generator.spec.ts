@@ -1,20 +1,27 @@
 import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
-import { Tree, readProjectConfiguration } from '@nrwl/devkit';
+import { Tree, readJson } from '@nrwl/devkit';
 
-import generator from './generator';
-import { AppGeneratorSchema } from './schema';
+import { updatePackageJSONScripts } from './generator';
 
 describe('app generator', () => {
   let appTree: Tree;
-  const options: AppGeneratorSchema = { name: 'test' };
 
   beforeEach(() => {
     appTree = createTreeWithEmptyWorkspace();
   });
 
-  it('should run successfully', async () => {
-    await generator(appTree, options);
-    const config = readProjectConfiguration(appTree, 'test');
-    expect(config).toBeDefined();
-  })
+  describe('Update package.json scripts', () => {
+    it('should add serve script', async () => {
+      const name = 'awesomeApp';
+      const context = 'awesomeContext';
+      const projectName = `${context}-${name}`;
+
+      await updatePackageJSONScripts(appTree, context, name);
+
+      const scripts = readJson(appTree, 'package.json').scripts;
+      expect(scripts[`serve:${context}-${name}:app`]).toEqual(
+        `nx serve --project ${projectName} -o`
+      );
+    });
+  });
 });
