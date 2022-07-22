@@ -4,7 +4,7 @@ import { ModuleBoundariesUpdateGeneratorOptions } from './schema';
 
 const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
 
-export default async function moduleBoundariesUpdate(
+export default async function updateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesUpdateGeneratorOptions
 ) {

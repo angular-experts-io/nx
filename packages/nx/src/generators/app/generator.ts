@@ -9,7 +9,7 @@ import {
   updateJson,
 } from '@nrwl/devkit';
 
-import moduleBoundariesUpdate from '../module-boundaries-update/generator';
+import updateModuleBoundaries from '../module-boundaries-update/generator';
 import {
   createConfigFileIfNonExisting,
   getContexts,
@@ -23,9 +23,10 @@ export default async function generateWorkspaceApp(
 ) {
   await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(tree, schema);
-  validateSchema(schema);
 
   const { context, name } = schema;
+
+  validateName(name);
 
   await applicationGenerator(tree, {
     name: `${context}/${name}`,
@@ -43,13 +44,13 @@ export default async function generateWorkspaceApp(
 
   await updateProjectTags(tree, context, name);
   await updatePackageJSONScripts(tree, context, name);
-  await moduleBoundariesUpdate(tree, { context, scope: `${name}` });
+  await updateModuleBoundaries(tree, { context, scope: `${name}` });
 
   removeInitialNavigationConfig(tree, context, name);
   removeWelcomeComponent(tree, context, name);
 
   await formatFiles(tree);
-  await organizeImportStatements(tree, context, name);
+  await organizeAppModuleImportStatements(tree, context, name);
 
   return () => {
     installPackagesTask(tree);
@@ -85,8 +86,7 @@ async function promptMissingSchemaProperties(
   }
 }
 
-function validateSchema(schema: AppGeneratorOptions) {
-  const { name } = schema;
+function validateName(name: string) {
   if (name.includes(' ')) {
     throw new Error(
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
@@ -126,7 +126,7 @@ function removeWelcomeComponent(tree: Tree, context: string, name: string) {
   tree.write(modulePath, moduleContent);
 
   const htmlPath = `${srcPath}/app.component.html`;
-  let htmlContent = `
+  const htmlContent = `
     <h1>Welcome ${context}-${name}</h1>
     <router-outlet></router-outlet>
  `;
@@ -182,7 +182,7 @@ async function updatePackageJSONScripts(
   });
 }
 
-async function organizeImportStatements(
+async function organizeAppModuleImportStatements(
   tree: Tree,
   context: string,
   name: string
