@@ -11,6 +11,10 @@
     "context": {
       "type": "string",
       "description": "Application context (eg b2e, aro, mcs, mcm,...)"
+    },
+    "prefix": {
+      "type": "string",
+      "description": "Prefix (for example your company abbreviation)"
     }
   },
   "required": []

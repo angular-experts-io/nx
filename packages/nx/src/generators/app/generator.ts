@@ -24,7 +24,7 @@ export default async function generateWorkspaceApp(
   await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(tree, schema);
 
-  const { context, name } = schema;
+  const { context, name, prefix } = schema;
 
   validateName(name);
 
@@ -34,7 +34,7 @@ export default async function generateWorkspaceApp(
     routing: true,
     tags: `context:${context},type:app`,
     standaloneConfig: true,
-    prefix: `somePrefix-${context}`,
+    prefix: `${prefix}-${context}`,
   });
   await moveGenerator(tree, {
     destination: `${context}/${name}-e2e`,
@@ -80,6 +80,18 @@ async function promptMissingSchemaProperties(
           type: 'input',
           name: 'name',
           message: 'What is the application name?',
+        },
+      ])
+    ).name;
+  }
+
+  if (!schema.prefix) {
+    schema.prefix = (
+      await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'prefix',
+          message: 'Which prefix should be used?',
         },
       ])
     ).name;
