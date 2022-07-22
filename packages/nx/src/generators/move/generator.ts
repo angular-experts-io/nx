@@ -15,8 +15,8 @@ import { applicationPrompt } from '../prompts/application.prompt';
 
 import { MoveSchema } from './schema';
 
-export default async function move(tree: Tree, options: MoveSchema) {
-  let { projectName, destination } = options;
+export default async function move(tree: Tree, schema: MoveSchema) {
+  let { projectName, destination } = schema;
 
   if (!projectName) {
     console.log('Choose the project you want to move');
