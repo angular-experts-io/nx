@@ -20,7 +20,7 @@ import { AppGeneratorOptions } from './schema';
 export default async function generateWorkspaceApp(
   tree: Tree,
   schema: AppGeneratorOptions
-) {
+): Promise<() => void> {
   await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(tree, schema);
 

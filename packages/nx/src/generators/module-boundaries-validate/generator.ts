@@ -19,7 +19,7 @@ export interface Result {
 export default async function validateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesValidateGeneratorOptions
-) {
+): Promise<() => void> {
   const { fix } = schema;
 
   const projects = await getProjects(tree);
@@ -173,7 +173,7 @@ function getFoldersFromTheeForDepth(
   path: string,
   maxDepth: number,
   results: string[] = []
-) {
+): string[] {
   const IGNORE = ['.gitkeep'];
   const folders = tree
     .children(path)
@@ -205,7 +205,7 @@ async function getProjects(tree: Tree): Promise<Project[]> {
   }));
 }
 
-function tagsDiffer(expectedTags: string[], tags: string[]) {
+function tagsDiffer(expectedTags: string[], tags: string[]): boolean {
   return JSON.stringify(expectedTags.sort()) !== JSON.stringify(tags.sort());
 }
 

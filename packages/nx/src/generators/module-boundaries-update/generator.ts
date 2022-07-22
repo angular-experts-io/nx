@@ -1,4 +1,5 @@
 import {Tree, readJson, updateJson} from '@nrwl/devkit';
+
 const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
 
 import {ModuleBoundariesUpdateGeneratorOptions} from './schema';
@@ -12,7 +13,7 @@ interface GroupedTags {
 export default async function updateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesUpdateGeneratorOptions
-) {
+): Promise<void> {
   const esLintConfiguration = await readJson(tree, '.eslintrc.json');
   const depConstraints = getDepConstraints(esLintConfiguration);
   const groupedTags = getGroupedTags(depConstraints);
@@ -77,7 +78,7 @@ function isNewContext(context: string, groupedTags: GroupedTags): boolean {
   return context && !groupedTags?.context?.includes(context);
 }
 
-function isNewScope(scope: string, groupedTags: GroupedTags) {
+function isNewScope(scope: string, groupedTags: GroupedTags): boolean {
   return scope &&
     !['public', 'shared'].includes(scope) &&
     !groupedTags?.scope?.includes(scope);
