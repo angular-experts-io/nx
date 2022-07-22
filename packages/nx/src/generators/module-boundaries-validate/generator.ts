@@ -15,17 +15,14 @@ export interface Result {
   fixes: string[];
 }
 
-export default async function moduleBoundariesValidate(
+
+export default async function validateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesValidateGeneratorOptions
 ) {
   const { fix } = schema;
-  const projectsRaw = (await readJson(tree, 'angular.json')?.projects) ?? {};
-  const projects = Object.keys(projectsRaw).map((key) => ({
-    name: key,
-    path: projectsRaw[key],
-  }));
 
+  const projects = await getProjects(tree);
   const aggregateViolations = [];
   const aggregateFixes = [];
 
@@ -64,22 +61,23 @@ async function validateProjectTagsMatchProjectLocation(
   project: Project,
   fix = false
 ): Promise<Result> {
+  const { name, path } = project;
   const violations = [];
   const fixes = [];
-
-  const { name, path } = project;
   const [appsOrLibs, context, scopeOrName, type] = path.split('/');
-  const projectJson: any = await readJson(tree, `${path}/project.json`);
+  const projectJson = await readJson(tree, `${path}/project.json`);
   const tags: string[] = projectJson?.tags ?? [];
   const expectedTags = [`context:${context}`];
+
   if (appsOrLibs === 'apps') {
     expectedTags.push(`type:${scopeOrName.endsWith('-e2e') ? 'e2e' : 'app'}`);
   } else {
     expectedTags.push(`scope:${scopeOrName}`);
     expectedTags.push(`type:${type}`);
   }
+
   const tagsDiff = diff(tags, expectedTags);
-  if (JSON.stringify(expectedTags.sort()) !== JSON.stringify(tags.sort())) {
+  if (tagsDiffer(expectedTags, tags)) {
     if (fix) {
       projectJson.tags = expectedTags;
       fixes.push(`${chalk.inverse(
@@ -198,3 +196,16 @@ function getFoldersFromTheeForDepth(
   }
   return results;
 }
+
+async function getProjects(tree: Tree): Promise<Project[]> {
+  const projectsRaw = (await readJson(tree, 'angular.json')?.projects) ?? {};
+  return Object.keys(projectsRaw).map((key) => ({
+    name: key,
+    path: projectsRaw[key],
+  }));
+}
+
+function tagsDiffer(expectedTags: string[], tags: string[]) {
+  return JSON.stringify(expectedTags.sort()) !== JSON.stringify(tags.sort());
+}
+

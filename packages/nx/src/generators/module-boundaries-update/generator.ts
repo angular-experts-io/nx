@@ -1,8 +1,7 @@
 import {Tree, readJson, updateJson} from '@nrwl/devkit';
+const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
 
 import {ModuleBoundariesUpdateGeneratorOptions} from './schema';
-
-const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
 
 interface GroupedTags {
   context: string[];

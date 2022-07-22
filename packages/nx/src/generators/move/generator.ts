@@ -10,7 +10,7 @@ import { contextPrompt } from '../prompts/context.prompt';
 import { ScopeType } from '../model/scope-type';
 import { ProjectTypes } from '../model/project-types';
 import { extractName } from '../utils/projectname';
-import moduleBoundariesValidate from '../module-boundaries-validate/generator';
+import validateModuleBoundaries from '../module-boundaries-validate/generator';
 import { applicationPrompt } from '../prompts/application.prompt';
 
 import { MoveSchema } from './schema';
@@ -99,5 +99,5 @@ export default async function move(tree: Tree, options: MoveSchema) {
   );
 
   await formatFiles(tree);
-  await moduleBoundariesValidate(tree, { fix: true });
+  await validateModuleBoundaries(tree, { fix: true });
 }
