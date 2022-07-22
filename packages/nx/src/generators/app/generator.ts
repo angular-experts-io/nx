@@ -1,37 +1,30 @@
-import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import { organizeImports } from 'import-conductor';
-import {
-  Tree,
-  formatFiles,
-  installPackagesTask,
-  updateJson,
-  readProjectConfiguration,
-  generateFiles,
-  joinPathFragments,
-} from '@nrwl/devkit';
-import { moveGenerator } from '@nrwl/workspace/generators';
-import { applicationGenerator } from '@nrwl/angular/generators';
+import {organizeImports} from 'import-conductor';
+import {formatFiles, installPackagesTask, Tree, updateJson,} from '@nrwl/devkit';
+import {applicationGenerator} from '@nrwl/angular/generators';
+
 // TODO do we want to go with stylelint?
 /*
 import { configurationGenerator, scssGenerator } from 'nx-stylelint';
 */
-
 import moduleBoundariesUpdate from '../module-boundaries-update/generator';
 
-import { AppGeneratorOptions } from './schema';
-import { getContexts } from '../utils/context.util';
+import {AppGeneratorOptions} from './schema';
+import {createConfigFileIfNonExisting, getContexts} from '../utils/context.util';
+import {moveGenerator} from "@nrwl/workspace/generators";
 
 export default async function generateWorkspaceApp(
   tree: Tree,
   schema: AppGeneratorOptions
 ) {
+  await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(tree, schema);
   validateSchema(schema);
 
   const { context, name } = schema;
-  const prefix = `mobi-${context}`;
-  const path = `${context}/${name}-rwc`;
+  // TODO should this be configurable?
+  const prefix = `somePrefix-${context}`;
+  const path = `${context}/${name}`;
   const enrichedSchema = {
     name: path,
     style: 'scss' as any,
@@ -41,25 +34,20 @@ export default async function generateWorkspaceApp(
     standaloneConfig: true,
     prefix,
   };
-  const projectName = `${context}-${name}-rwc`;
+  const projectName = `${context}-${name}`;
 
   await applicationGenerator(tree, enrichedSchema);
   await moveGenerator(tree, {
-    destination: `${context}/${name}-rwc-e2e`,
-    projectName: `${context}-${name}-rwc-e2e`,
+    destination: `${context}/${name}-e2e`,
+    projectName: `${context}-${name}-e2e`,
     updateImportPath: true,
   });
-
   removeInitialNavigationConfig(tree, context, name);
   removeWelcomeComponent(tree, context, name);
-  importBrowserAnimationsModule(tree, context, name);
-
-  generateRelevantFiles(tree, projectName);
-  await updateProjectJson(tree, context, name, path);
 
   await updateJson(
     tree,
-    `apps/${context}/${name}-rwc-e2e/project.json`,
+    `apps/${context}/${name}-e2e/project.json`,
     (projectJson) => {
       projectJson.tags = [`context:${context}`, 'type:e2e'];
       return projectJson;
@@ -68,9 +56,6 @@ export default async function generateWorkspaceApp(
 
   await updateJson(tree, `package.json`, (packageJson) => {
     packageJson.scripts[
-      `serve:${projectName}`
-    ] = `run-p -r auth-server serve:${projectName}:app`;
-    packageJson.scripts[
       `serve:${projectName}:app`
     ] = `nx serve --project ${projectName} -o`;
     packageJson.scripts[
@@ -78,7 +63,7 @@ export default async function generateWorkspaceApp(
     ] = `nx build --project ${projectName}`;
     packageJson.scripts[
       `analyze:${projectName}`
-    ] = `nx build --project ${projectName} --stats-json && webpack-bundle-analyzer dist/apps/${context}/${name}-rwc/stats.json`;
+    ] = `nx build --project ${projectName} --stats-json && webpack-bundle-analyzer dist/apps/${context}/${name}/stats.json`;
     packageJson.scripts[
       `lint:${projectName}`
     ] = `nx lint --project ${projectName} && nx stylelint --project ${projectName} --fix`;
@@ -91,9 +76,9 @@ export default async function generateWorkspaceApp(
     return packageJson;
   });
 
+  // TODO do we want to use stylelint
   // await scssGenerator(tree, { project: projectName, skipFormat: true });
-
-  await moduleBoundariesUpdate(tree, { context, scope: `${name}-rwc` });
+  await moduleBoundariesUpdate(tree, { context, scope: `${name}` });
   await formatFiles(tree);
   await organizeImportStatements(tree, context, name);
 
@@ -107,7 +92,7 @@ async function organizeImportStatements(
   context: string,
   name: string
 ) {
-  const modulePath = `apps/${context}/${name}-rwc/src/app/app.module.ts`;
+  const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
   const appModuleContent = tree.read(modulePath).toString();
   const appModuleContentWithOrganizedImports = await organizeImports(
     appModuleContent
@@ -145,33 +130,12 @@ async function promptMissingSchemaProperties(
   }
 }
 
-function importBrowserAnimationsModule(
-  tree: Tree,
-  context: string,
-  name: string
-) {
-  const modulePath = `apps/${context}/${name}-rwc/src/app/app.module.ts`;
-  let moduleContent = tree.read(modulePath).toString();
-  moduleContent = moduleContent.replace(
-    "import { BrowserModule } from '@angular/platform-browser';",
-    `import { BrowserModule } from \'@angular/platform-browser\';
-    import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-    `
-  );
-  moduleContent = moduleContent.replace(
-    'BrowserModule,',
-    `BrowserModule,
-  BrowserAnimationsModule,`
-  );
-  tree.write(modulePath, moduleContent);
-}
-
 function removeInitialNavigationConfig(
   tree: Tree,
   context: string,
   name: string
 ) {
-  const modulePath = `apps/${context}/${name}-rwc/src/app/app.module.ts`;
+  const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
   let moduleContent = tree.read(modulePath).toString();
   moduleContent = moduleContent.replace(
     ", { initialNavigation: 'enabledBlocking' }",
@@ -181,7 +145,7 @@ function removeInitialNavigationConfig(
 }
 
 function removeWelcomeComponent(tree: Tree, context: string, name: string) {
-  const srcPath = `apps/${context}/${name}-rwc/src/app/`;
+  const srcPath = `apps/${context}/${name}/src/app/`;
   tree.delete(`${srcPath}nx-welcome.component.ts`);
 
   const modulePath = `${srcPath}/app.module.ts`;
@@ -195,7 +159,7 @@ function removeWelcomeComponent(tree: Tree, context: string, name: string) {
 
   const htmlPath = `${srcPath}/app.component.html`;
   let htmlContent = `
-    <h1>Welcome ${context}-${name}-rwc</h1>
+    <h1>Welcome ${context}-${name}</h1>
     <router-outlet></router-outlet>
  `;
   tree.write(htmlPath, htmlContent);
@@ -208,48 +172,6 @@ function removeWelcomeComponent(tree: Tree, context: string, name: string) {
     ''
   );
   tree.write(specPath, specContent);
-}
-
-function generateRelevantFiles(tree: Tree, projectName: string) {
-  const applicationRoot = readProjectConfiguration(tree, projectName).root;
-  generateFiles(
-    tree,
-    joinPathFragments(__dirname, './files/proxy'),
-    applicationRoot,
-    { tkNameId: projectName }
-  );
-}
-
-async function updateProjectJson(
-  tree: Tree,
-  context: string,
-  name: string,
-  path: string
-) {
-  await updateJson(
-    tree,
-    `apps/${context}/${name}-rwc/project.json`,
-    (projectJson) => {
-      projectJson.targets.serve.options = {
-        ...(projectJson.targets.serve.options || {}),
-        proxyConfig: `apps/${path}/proxy.conf.js`,
-      };
-      projectJson.targets.build.options.styles = [
-        'libs/b2e/public/ui/styles/src/styles.scss',
-        ...projectJson.targets.build.options.styles,
-      ];
-      projectJson.targets.build.options.assets = [
-        {
-          glob: '**/*',
-          input: 'libs/b2e/public/ui/assets/src',
-          output: 'assets',
-        },
-        ...projectJson.targets.build.options.assets,
-      ];
-      projectJson.implicitDependencies = ['b2e-public-ui-styles'];
-      return projectJson;
-    }
-  );
 }
 
 function validateSchema(schema: AppGeneratorOptions) {

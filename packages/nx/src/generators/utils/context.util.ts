@@ -34,13 +34,11 @@ export async function createConfigFileIfNonExisting(tree: Tree) {
 }
 
 export async function getContexts(tree: Tree) {
-  await this.createConfigFileIfNonExisting(tree);
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString()).contexts;
 }
 
 export async function getConfiguration(tree: Tree) {
-  await this.createConfigFileIfNonExisting(tree);
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString());
 }
