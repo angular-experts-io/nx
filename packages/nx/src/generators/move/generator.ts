@@ -1,31 +1,32 @@
-import { formatFiles, readJson, Tree, updateJson } from '@nrwl/devkit';
-import { moveGenerator } from '@nrwl/workspace/generators';
+import {formatFiles, readJson, Tree, updateJson} from '@nrwl/devkit';
+import {moveGenerator} from '@nrwl/workspace/generators';
 import * as inquirer from 'inquirer';
 import * as chalk from 'chalk';
 
 import typePrompt from '../prompts/type.prompt';
 import scopePrompt from '../prompts/scope.prompt';
-import { projectPrompt } from '../prompts/project.prompt';
-import { contextPrompt } from '../prompts/context.prompt';
-import { ScopeType } from '../model/scope-type';
-import { ProjectTypes } from '../model/project-types';
-import { extractName } from '../utils/projectname';
+import {projectPrompt} from '../prompts/project.prompt';
+import {contextPrompt} from '../prompts/context.prompt';
+import {ScopeType} from '../model/scope-type';
+import {ProjectTypes} from '../model/project-types';
+import {extractName} from '../utils/projectname';
 import validateModuleBoundaries from '../module-boundaries-validate/generator';
-import { applicationPrompt } from '../prompts/application.prompt';
+import {applicationPrompt} from '../prompts/application.prompt';
 
-import { MoveSchema } from './schema';
+import {MoveSchema} from './schema';
 
 export default async function move(tree: Tree, schema: MoveSchema) {
-  let { projectName, destination } = schema;
+  let {projectName, destination} = schema;
 
   if (!projectName) {
     console.log('Choose the project you want to move');
     projectName = await projectPrompt(tree);
   }
 
+  const angularJSON = readJson(tree, './angular.json');
+  const isApplication = angularJSON.projects[projectName].includes('apps');
+
   if (!destination) {
-    const angularJSON = readJson(tree, './angular.json');
-    const isApplication = angularJSON.projects[projectName].includes('apps');
 
     let targetContext = await contextPrompt(
       tree,
@@ -67,8 +68,8 @@ export default async function move(tree: Tree, schema: MoveSchema) {
         name
       )} as name, or do you want to change the name?`,
       choices: [
-        { name: `Keep ${name}`, value: false },
-        { name: `Let me enter a new name`, value: true },
+        {name: `Keep ${name}`, value: false},
+        {name: `Let me enter a new name`, value: true},
       ],
     });
 
@@ -89,15 +90,17 @@ export default async function move(tree: Tree, schema: MoveSchema) {
     skipFormat: true,
   });
 
-  await updateJson(
-    tree,
-    `libs/${destination}/ng-package.json`,
-    (projectJson) => {
-      projectJson.dest = `../../../../../dist/libs/${destination}`;
-      return projectJson;
-    }
-  );
+  if(!isApplication) {
+    await updateJson(
+      tree,
+      `libs/${destination}/ng-package.json`,
+      (projectJson) => {
+        projectJson.dest = `../../../../../dist/libs/${destination}`;
+        return projectJson;
+      }
+    );
+  }
 
   await formatFiles(tree);
-  await validateModuleBoundaries(tree, { fix: true });
+  await validateModuleBoundaries(tree, {fix: true});
 }

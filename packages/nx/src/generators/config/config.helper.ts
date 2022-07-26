@@ -1,5 +1,5 @@
-import { Tree } from '@nrwl/devkit';
 import * as inquirer from 'inquirer';
+import {Tree} from "@nrwl/devkit";
 
 export const CONFIG_FILE_NAME = '.ax.config.json';
 
@@ -25,7 +25,6 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
       message:
         'Please enter all contexts (comma separated) you want to use in your project.',
     });
-    console.log('Contexts', contexts);
     tree.write(
       CONFIG_FILE_NAME,
       JSON.stringify({ contexts: contexts.availableContexts.split(',') })
@@ -42,3 +41,4 @@ export async function getConfiguration(tree: Tree) {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString());
 }
+

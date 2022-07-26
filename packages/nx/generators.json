@@ -8,20 +8,25 @@
       "schema": "./src/generators/nx/schema.json",
       "description": "nx generator"
     },
+    "app": {
+      "factory": "./src/generators/app/generator",
+      "schema": "./src/generators/app/schema.json",
+      "description": "app generator"
+    },
     "move": {
       "factory": "./src/generators/move/generator",
       "schema": "./src/generators/move/schema.json",
       "description": "move generator"
     },
+    "remove": {
+      "factory": "./src/generators/remove/generator",
+      "schema": "./src/generators/remove/schema.json",
+      "description": "remove generator"
+    },
     "module-boundaries-validate": {
       "factory": "./src/generators/module-boundaries-validate/generator",
       "schema": "./src/generators/module-boundaries-validate/schema.json",
       "description": "module-boundaries-validate generator"
-    },
-    "app": {
-      "factory": "./src/generators/app/generator",
-      "schema": "./src/generators/app/schema.json",
-      "description": "app generator"
     },
     "module-boundaries-update": {
       "factory": "./src/generators/module-boundaries-update/generator",

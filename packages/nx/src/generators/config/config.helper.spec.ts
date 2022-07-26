@@ -2,10 +2,11 @@ import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
 import { Tree } from '@nrwl/devkit';
 import * as inquirer from 'inquirer';
 
+import {createConfigFileIfNonExisting} from "./config.helper";
+
 import {
-  createConfigFileIfNonExisting,
   CONFIG_FILE_NAME,
-} from './context.util';
+} from './config.helper';
 
 describe('foo generator', () => {
   let tree: Tree;
@@ -30,3 +31,4 @@ describe('foo generator', () => {
     expect(expectedContexts).toEqual(contextsFromFile);
   });
 });
+
