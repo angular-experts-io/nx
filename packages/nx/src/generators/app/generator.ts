@@ -94,7 +94,7 @@ async function promptMissingSchemaProperties(
           message: 'Which prefix should be used?',
         },
       ])
-    ).name;
+    ).prefix;
   }
 }
 
