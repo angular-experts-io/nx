@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "lib",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Library name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "prefix": {
+      "type": "string",
+      "description": "Prefix (for example your company abbreviation)"
+    },
+    "context": {
+      "type": "string",
+      "description": "Library context (eg b2e, aro, mcs, mcm,...)"
+    },
+    "scopeType": {
+      "type": "string",
+      "description": "Library scope (eg public, shared, app-specific)"
+    },
+    "scopeAppSpecific": {
+      "type": "string",
+      "description": "App name (eg some-rwc) for the app specific scope or leave empty if scope 'public' or 'shared' was provided"
+    },
+    "type": {
+      "type": "string",
+      "description": "Library type (eg feature, data-access, ui, ...)"
+    }
+  },
+  "required": []
+}

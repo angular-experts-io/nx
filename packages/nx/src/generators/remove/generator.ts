@@ -156,7 +156,7 @@ async function removeProject(tree: Tree, projectToDelete: string): Promise<void>
   });
 
   await updateJson(tree, `tsconfig.base.json`, (tsconfigJSON) => {
-    delete tsconfigJSON.compilerOptions.paths[`@mobi/${projectToDelete}`];
+    delete tsconfigJSON.compilerOptions.paths[projectToDelete];
     return tsconfigJSON;
   });
 }

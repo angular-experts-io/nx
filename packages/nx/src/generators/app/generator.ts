@@ -10,7 +10,7 @@ import {
 } from '@nrwl/devkit';
 
 import updateModuleBoundaries from '../module-boundaries-update/generator';
-import {createConfigFileIfNonExisting,getContexts } from "../config/config.helper";
+import {createConfigFileIfNonExisting, getContexts } from "../config/config.helper";
 
 import { AppGeneratorOptions } from './schema';
 
