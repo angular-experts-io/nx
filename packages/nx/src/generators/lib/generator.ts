@@ -24,7 +24,7 @@ import { applicationPrompt } from '../prompts/application.prompt';
 import moduleBoundariesUpdate from '../module-boundaries-update/generator';
 
 import { LibGeneratorOptions } from './schema';
-import {getContexts} from "../config/config.helper";
+import {getContexts, getPrefix} from "../config/config.helper";
 
 export default async function generateWorkspaceLibrary(
   tree: Tree,
@@ -33,7 +33,13 @@ export default async function generateWorkspaceLibrary(
   await promptMissingSchemaProperties(schema, tree);
   validateOptions(schema);
 
-  const { prefix, context, scopeType, scopeAppSpecific, type, name } = schema;
+  const { context, scopeType, scopeAppSpecific, type, name } = schema;
+  /*
+   TODO how do we want to handle cases where the prefix was deleted in AX config.
+    - Let user reenter it again
+    - Create libs without prefix
+   */
+  const prefix = await getPrefix(tree);
   const selectedGenerator = [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
     type
   )

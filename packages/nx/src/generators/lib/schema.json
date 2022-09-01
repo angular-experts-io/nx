@@ -12,10 +12,6 @@
         "index": 0
       }
     },
-    "prefix": {
-      "type": "string",
-      "description": "Prefix (for example your company abbreviation)"
-    },
     "context": {
       "type": "string",
       "description": "Library context (eg b2e, aro, mcs, mcm,...)"

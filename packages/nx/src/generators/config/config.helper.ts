@@ -5,6 +5,7 @@ export const CONFIG_FILE_NAME = '.ax.config.json';
 
 interface ConfigFile {
   contexts?: string[];
+  prefix?: string;
 }
 
 export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
@@ -19,17 +20,38 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
     );
   }
 
-  if (!configFile || !configFile.contexts) {
-    const contexts = await inquirer.prompt({
+  let contexts;
+  let prefix;
+
+  if (!configFile?.contexts) {
+    contexts = await inquirer.prompt({
       name: 'availableContexts',
       message:
         'Please enter all contexts (comma separated) you want to use in your project.',
     });
-    tree.write(
-      CONFIG_FILE_NAME,
-      JSON.stringify({ contexts: contexts.availableContexts.split(',') })
-    );
   }
+
+
+  if (!configFile?.prefix) {
+    prefix = await inquirer.prompt({
+      name: 'companyPrefix',
+      message:
+        'Please enter your company prefix or company name',
+    });
+  }
+
+  tree.write(
+    CONFIG_FILE_NAME,
+    JSON.stringify({
+      contexts: contexts.availableContexts.split(','),
+      prefix: prefix.companyName
+    })
+  );
+}
+
+export async function getPrefix(tree: Tree): Promise<string | undefined> {
+  const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
+  return JSON.parse(configurationFileBuffer.toString()).prefix;
 }
 
 export async function getContexts(tree: Tree) {
