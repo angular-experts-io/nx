@@ -10,7 +10,7 @@ import {
 } from '@nrwl/devkit';
 
 import updateModuleBoundaries from '../module-boundaries-update/generator';
-import {createConfigFileIfNonExisting, getContexts } from "../config/config.helper";
+import {createConfigFileIfNonExisting, getContexts} from "../config/config.helper";
 
 import { AppGeneratorOptions } from './schema';
 
@@ -33,6 +33,7 @@ export default async function generateWorkspaceApp(
     standaloneConfig: true,
     prefix: `${prefix}-${context}`,
   });
+
   await moveGenerator(tree, {
     destination: `${context}/${name}-e2e`,
     projectName: `${context}-${name}-e2e`,
@@ -82,6 +83,7 @@ async function promptMissingSchemaProperties(
     ).name;
   }
 
+  // TODO this should probably come from the config
   if (!schema.prefix) {
     schema.prefix = (
       await inquirer.prompt([

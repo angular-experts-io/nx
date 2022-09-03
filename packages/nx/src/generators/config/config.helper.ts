@@ -1,6 +1,7 @@
 import * as inquirer from 'inquirer';
 import {Tree} from "@nrwl/devkit";
 
+// TODO refactor - this should not be here
 export const CONFIG_FILE_NAME = '.ax.config.json';
 
 interface ConfigFile {
