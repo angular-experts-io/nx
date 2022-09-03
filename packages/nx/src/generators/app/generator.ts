@@ -34,6 +34,7 @@ export default async function generateWorkspaceApp(
     prefix: `${prefix}-${context}`,
   });
 
+  // TODO: why is this needed
   await moveGenerator(tree, {
     destination: `${context}/${name}-e2e`,
     projectName: `${context}-${name}-e2e`,
@@ -99,6 +100,7 @@ async function promptMissingSchemaProperties(
 
 function validateName(name: string): void {
   if (name.includes(' ')) {
+    console.log('Hier');
     throw new Error(
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
     );
@@ -124,6 +126,7 @@ function removeInitialNavigationConfig(
 }
 
 function removeWelcomeComponent(tree: Tree, context: string, name: string): void {
+  // TODO - also remove it from the declarations array in AppModule
   const srcPath = `apps/${context}/${name}/src/app/`;
   tree.delete(`${srcPath}nx-welcome.component.ts`);
 
