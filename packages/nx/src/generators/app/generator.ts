@@ -34,7 +34,7 @@ export default async function generateWorkspaceApp(
     prefix: `${prefix}-${context}`,
   });
 
-  // TODO: why is this needed
+  // TODO: why is this needed ?
   await moveGenerator(tree, {
     destination: `${context}/${name}-e2e`,
     projectName: `${context}-${name}-e2e`,

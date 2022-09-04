@@ -1,17 +1,16 @@
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 import {Tree, readJson} from '@nrwl/devkit';
-import * as inquirer from 'inquirer';
 
-import * as configHelper from '../config/config.helper';
-import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import * as nrwlWorkspaceGenerators from '@nrwl/workspace/generators';
-import * as nrwlDevKit from '@nrwl/devkit';
 import * as importConductor from 'import-conductor';
+import * as nrwlDevKit from '@nrwl/devkit';
+import * as inquirer from 'inquirer';
 
-import generateWorkspaceApp, {updatePackageJSONScripts} from './generator';
-import {getContexts} from '../config/config.helper';
-import {readFile} from "@nrwl/nx-plugin/testing";
+import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
+import * as configHelper from '../config/config.helper';
+
+import generateWorkspaceApp from './generator';
 
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')

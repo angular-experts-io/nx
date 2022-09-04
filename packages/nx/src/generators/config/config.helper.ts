@@ -1,7 +1,6 @@
 import * as inquirer from 'inquirer';
 import {Tree} from "@nrwl/devkit";
 
-// TODO refactor - this should not be here
 export const CONFIG_FILE_NAME = '.ax.config.json';
 
 interface ConfigFile {
@@ -34,6 +33,7 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
 
 
   if (!configFile?.prefix) {
+    console.log('Da');
     prefix = await inquirer.prompt({
       name: 'companyPrefix',
       message:
@@ -45,7 +45,7 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
     CONFIG_FILE_NAME,
     JSON.stringify({
       contexts: contexts.availableContexts.split(','),
-      prefix: prefix.companyName
+      prefix: prefix.companyPrefix
     })
   );
 }
@@ -59,9 +59,3 @@ export async function getContexts(tree: Tree) {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString()).contexts;
 }
-
-export async function getConfiguration(tree: Tree) {
-  const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
-  return JSON.parse(configurationFileBuffer.toString());
-}
-
