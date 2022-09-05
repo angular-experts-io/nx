@@ -83,19 +83,6 @@ async function promptMissingSchemaProperties(
       ])
     ).name;
   }
-
-  // TODO this should probably come from the config
-  if (!schema.prefix) {
-    schema.prefix = (
-      await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'prefix',
-          message: 'Which prefix should be used?',
-        },
-      ])
-    ).prefix;
-  }
 }
 
 function validateName(name: string): void {

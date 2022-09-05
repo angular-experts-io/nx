@@ -1,39 +1,30 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import {
-  formatFiles,
-  installPackagesTask,
-  Tree,
-  updateJson,
-} from '@nrwl/devkit';
-import { libraryGenerator } from '@nrwl/workspace/generators';
-import {
-  libraryGenerator as angularLibraryGenerator,
-  ngrxGenerator,
-} from '@nrwl/angular/generators';
+import {formatFiles, installPackagesTask, Tree, updateJson,} from '@nrwl/devkit';
+import {libraryGenerator} from '@nrwl/workspace/generators';
+import {libraryGenerator as angularLibraryGenerator, ngrxGenerator,} from '@nrwl/angular/generators';
 
-import {
-  angularComponentGenerator,
-  DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-} from '../utils/generators-angular';
-import { getAvailableScopeTypes, ScopeType } from '../model/scope-type';
-import { AVAILABLE_LIBRARY_TYPES, LibraryType } from '../model/library-type';
-import { pascalCase } from '../utils/string';
-import { applicationPrompt } from '../prompts/application.prompt';
+import {angularComponentGenerator, DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,} from '../utils/generators-angular';
+import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
+import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
+import {pascalCase} from '../utils/string';
+import {applicationPrompt} from '../prompts/application.prompt';
 
 import moduleBoundariesUpdate from '../module-boundaries-update/generator';
+import {createConfigFileIfNonExisting, getContexts, getPrefix} from "../config/config.helper";
 
-import { LibGeneratorOptions } from './schema';
-import {getContexts, getPrefix} from "../config/config.helper";
+import {LibGeneratorOptions} from './schema';
 
 export default async function generateWorkspaceLibrary(
   tree: Tree,
+  // TODO: remove prefix from library options
   schema: LibGeneratorOptions
 ) {
+  await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(schema, tree);
   validateOptions(schema);
 
-  const { context, scopeType, scopeAppSpecific, type, name } = schema;
+  const {context, scopeType, scopeAppSpecific, type, name} = schema;
   /*
    TODO how do we want to handle cases where the prefix was deleted in AX config.
     - Let user reenter it again
@@ -73,9 +64,8 @@ export default async function generateWorkspaceLibrary(
     enrichedSchema.skipModule = true;
   }
   if (isAppSpecificLazyFeature) {
-    const appName = scope.slice(0, scope.lastIndexOf('-'));
     enrichedSchema.lazy = true;
-    enrichedSchema.parentModule = `apps/${context}/${appName}/src/app/app.module.ts`;
+    enrichedSchema.parentModule = `apps/${context}/${scope}/src/app/app.module.ts`;
   }
 
   // generate lib
@@ -94,8 +84,7 @@ export default async function generateWorkspaceLibrary(
 
   // adjust generated files
   if (isAppSpecificLazyFeature) {
-    const appName = scope.slice(0, scope.lastIndexOf('-'));
-    const parentModuleFilePath = `apps/${context}/${appName}/src/app/app.module.ts`;
+    const parentModuleFilePath = `apps/${context}/${scope}/src/app/app.module.ts`;
     const parentModuleFileContent = tree.read(parentModuleFilePath).toString();
     tree.write(
       parentModuleFilePath,
@@ -112,7 +101,7 @@ export default async function generateWorkspaceLibrary(
     return tsconfig;
   });
 
-  await moduleBoundariesUpdate(tree, { context, scope, type });
+  await moduleBoundariesUpdate(tree, {context, scope, type});
   await formatFiles(tree);
 
   return () => {
@@ -139,7 +128,7 @@ async function generateInitialLibStructure(
     scopeAppSpecific?: string;
   }
 ) {
-  const { type, prefix, project, path, name, context, scopeAppSpecific } =
+  const {type, prefix, project, path, name, context, scopeAppSpecific} =
     options;
   const moduleName = `${path.replace(/\//g, '-')}.module`;
   const selector = scopeAppSpecific
@@ -281,7 +270,7 @@ async function promptMissingSchemaProperties(
 }
 
 function validateOptions(options: LibGeneratorOptions) {
-  const { scopeType, scopeAppSpecific, name } = options;
+  const {scopeType, scopeAppSpecific, name} = options;
   if (name.includes(' ')) {
     throw new Error(
       `The lib name "${name}" should not contain spaces. Please use "-" instead.`
