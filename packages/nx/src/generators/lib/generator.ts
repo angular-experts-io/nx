@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 import {formatFiles, installPackagesTask, Tree, updateJson,} from '@nrwl/devkit';
 import {libraryGenerator} from '@nrwl/workspace/generators';
-import {libraryGenerator as angularLibraryGenerator, ngrxGenerator,} from '@nrwl/angular/generators';
+import {libraryGenerator as angularLibraryGenerator, ngrxGenerator} from '@nrwl/angular/generators';
 
 import {angularComponentGenerator, DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,} from '../utils/generators-angular';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
@@ -161,7 +161,7 @@ async function generateInitialLibStructure(
 
     const modulePath = `libs/${path}/src/lib/${moduleName}.ts`;
     const moduleContent = tree.read(modulePath).toString();
-    // app specific
+
     tree.write(
       modulePath,
       moduleContent.replace(
@@ -171,17 +171,8 @@ async function generateInitialLibStructure(
         )}Component }`
       )
     );
-    // public or shared
-    tree.write(
-      modulePath,
-      moduleContent.replace(
-        "/* {path: '', pathMatch: 'full', component: InsertYourComponentHere} */",
-        `{ path: '', pathMatch: 'full', component: ${pascalCase(
-          `${name}-container`
-        )}Component }`
-      )
-    );
   }
+
   if (type === LibraryType.DATA_ACCESS) {
     await ngrxGenerator(tree, {
       name,
