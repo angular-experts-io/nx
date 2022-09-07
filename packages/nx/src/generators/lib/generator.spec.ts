@@ -1,20 +1,22 @@
-import {Tree} from '@nrwl/devkit';
+import {readJson, Tree} from '@nrwl/devkit';
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 
 import * as inquirer from 'inquirer';
 
+import * as nrwlDevKit from '@nrwl/devkit';
 import * as applicationPrompts from '../prompts/application.prompt';
 import * as configHelper from '../config/config.helper';
 import {getContexts} from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
 import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
+import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
 
 import generateWorkspaceLibrary from './generator';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
 import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
-import generateWorkspaceApp from "../app/generator";
-import {pascalCase} from "../utils/string";
+import generateWorkspaceApp from '../app/generator';
+import {pascalCase} from '../utils/string';
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
@@ -38,7 +40,6 @@ jest.mock('@nrwl/angular/generators', () => {
     ...actualModule,
   };
 });
-
 
 describe('library generator', () => {
   let appTree: Tree;
@@ -207,7 +208,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -240,7 +241,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -272,7 +273,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -305,7 +306,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -338,7 +339,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest
@@ -375,7 +376,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest
@@ -409,7 +410,10 @@ describe('library generator', () => {
           const project = `${context}-${scopeType}-${type}-${name}`;
           const selector = `${prefix}-${context}-${name}`;
           const schema = {
-            context, scopeType, type, name
+            context,
+            scopeType,
+            type,
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -442,7 +446,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -474,7 +478,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -507,7 +511,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -540,7 +544,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest
@@ -577,7 +581,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest
@@ -615,7 +619,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
@@ -626,7 +630,8 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree, {
+            appTree,
+            {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: `${schema.name}-container`,
@@ -635,6 +640,181 @@ describe('library generator', () => {
               selector,
             }
           );
+        });
+
+        it('should adjust the package JSON', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.SHARED;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const packageJSONPath = `libs/${libpath}/package.json`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const packageJSON = readJson(appTree, packageJSONPath);
+
+          expect(packageJSON.name).toBe(packageName);
+        });
+
+
+        it('should adjust the tsconfig', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.SHARED;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const tsconfig = readJson(appTree, `tsconfig.base.json`);
+          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+        });
+
+        it('should call the moduleBoundaries updates', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.SHARED;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest.spyOn(moduleBoundariesGenerator, 'default');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
+            appTree, {context, scope: scopeType, type}
+          );
+        });
+
+        it('should format the files', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.SHARED;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlDevKit, 'formatFiles');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
+        });
+
+        it('should return a function that allows to call installPackagesTask', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.SHARED;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          (await generateWorkspaceLibrary(appTree, librarySchema))();
+
+          expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
         });
       });
 
@@ -663,7 +843,8 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree, {
+            appTree,
+            {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: `${schema.name}-container`,
@@ -672,6 +853,181 @@ describe('library generator', () => {
               selector,
             }
           );
+        });
+
+        it('should adjust the package JSON', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.PUBLIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const packageJSONPath = `libs/${libpath}/package.json`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const packageJSON = readJson(appTree, packageJSONPath);
+
+          expect(packageJSON.name).toBe(packageName);
+        });
+
+
+        it('should adjust the tsconfig', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.PUBLIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const tsconfig = readJson(appTree, `tsconfig.base.json`);
+          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+        });
+
+        it('should call the moduleBoundaries updates', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.PUBLIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            type,
+            name,
+          };
+
+          jest.spyOn(moduleBoundariesGenerator, 'default');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
+            appTree, {context, scope: scopeType, type}
+          );
+        });
+
+        it('should format the files', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.PUBLIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlDevKit, 'formatFiles');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
+        });
+
+        it('should return a function that allows to call installPackagesTask', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.PUBLIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          (await generateWorkspaceLibrary(appTree, librarySchema))();
+
+          expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
         });
       });
 
@@ -694,7 +1050,7 @@ describe('library generator', () => {
             scope,
             scopeAppSpecific,
             type,
-            name
+            name,
           };
 
           jest
@@ -709,7 +1065,8 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree, {
+            appTree,
+            {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: `${librarySchema.name}-container`,
@@ -739,7 +1096,7 @@ describe('library generator', () => {
             scope,
             scopeAppSpecific,
             type,
-            name
+            name,
           };
 
           jest
@@ -754,17 +1111,202 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const appModuleContent = appTree.read(modulePath).toString();
-          expect(appModuleContent).toContain(`{ path: '', pathMatch: 'full', component: ${pascalCase(
-            `${librarySchema.name}-container`
-          )}Component }`)
+          expect(appModuleContent).toContain(
+            `{ path: '', pathMatch: 'full', component: ${pascalCase(
+              `${librarySchema.name}-container`
+            )}Component }`
+          );
+        });
+
+        /*
+         TODO: add this test for public and shared scope as well and for other libtypes to
+         STARTING HERE:
+         */
+        it('should adjust the package JSON', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const packageJSONPath = `libs/${libpath}/package.json`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const packageJSON = readJson(appTree, packageJSONPath);
+
+          expect(packageJSON.name).toBe(packageName);
+        });
+
+
+        it('should adjust the tsconfig', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          const tsconfig = readJson(appTree, `tsconfig.base.json`);
+          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+        });
+
+        it('should call the moduleBoundaries updates', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(moduleBoundariesGenerator, 'default');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
+            appTree, {context, scope: scopeAppSpecific}
+          );
+        });
+
+        it('should format the files', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlDevKit, 'formatFiles');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceLibrary(appTree, librarySchema);
+
+          expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
+        });
+
+        it('should return a function that allows to call installPackagesTask', async () => {
+          const prefix = 'prefix';
+          const context = 'domain-a';
+          const appName = 'test-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scope = 'foo';
+          const type = LibraryType.FEATURE;
+          const scopeAppSpecific = appName;
+          const name = 'my-lib';
+
+          const librarySchema = {
+            context,
+            scopeType,
+            scope,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(appName));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceApp(appTree, {context, name: appName});
+          (await generateWorkspaceLibrary(appTree, librarySchema))();
+
+          expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
         });
       });
     });
 
     describe('Library type data-access', () => {
-
       describe('Scope shared', () => {
-
         it('should call the ngrxGenerator for libraries of type data-access', async () => {
           const prefix = 'my-prefix';
           const applicationScope = 'foo';
@@ -779,7 +1321,7 @@ describe('library generator', () => {
             context,
             scopeType,
             type,
-            name
+            name,
           };
 
           jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
@@ -794,7 +1336,8 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
-            appTree, {
+            appTree,
+            {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
               directory: '+state',
@@ -804,6 +1347,319 @@ describe('library generator', () => {
           );
         });
 
+        it('should prefix the state slice', async () => {
+          const prefix = 'my-prefix';
+          const applicationScope = 'foo';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.SHARED;
+          const type = LibraryType.DATA_ACCESS;
+          const name = 'my-awesome-app';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const reducer = appTree.read(reducerFilePath).toString();
+
+          expect(reducer).toContain(
+            `export const ${name.toUpperCase()}_FEATURE_KEY = '${context}_${name}';`
+          );
+        });
+      });
+
+      describe('Scope public', () => {
+        it('should call the ngrxGenerator for libraries of type data-access', async () => {
+          const prefix = 'my-prefix';
+          const applicationScope = 'foo';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.PUBLIC;
+          const type = LibraryType.DATA_ACCESS;
+          const name = 'my-awesome-app';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const moduleName = `${context}-${scopeType}-${type}-${name}.module`;
+
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
+            appTree,
+            {
+              name: schema.name,
+              module: `libs/${libpath}/src/lib/${moduleName}.ts`,
+              directory: '+state',
+              minimal: false,
+              useDataPersistence: true,
+            }
+          );
+        });
+
+        it('should prefix the state slice', async () => {
+          const prefix = 'my-prefix';
+          const applicationScope = 'foo';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.PUBLIC;
+          const type = LibraryType.DATA_ACCESS;
+          const name = 'my-awesome-app';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const reducer = appTree.read(reducerFilePath).toString();
+
+          expect(reducer).toContain(
+            `export const ${name.toUpperCase()}_FEATURE_KEY = '${context}_${name}';`
+          );
+        });
+      });
+
+      describe('Scope app specific', () => {
+        it('should call the ngrxGenerator for libraries of type data-access', async () => {
+          const prefix = 'my-prefix';
+          const applicationScope = 'foo';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const type = LibraryType.DATA_ACCESS;
+          const scopeAppSpecific = 'my-awesome-app';
+          const name = 'my-awesome-app';
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const moduleName = `${context}-${scopeAppSpecific}-${type}-${name}.module`;
+          const schema = {
+            context,
+            scopeType,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
+            appTree,
+            {
+              name: schema.name,
+              module: `libs/${libpath}/src/lib/${moduleName}.ts`,
+              directory: '+state',
+              minimal: false,
+              useDataPersistence: true,
+            }
+          );
+        });
+
+        it('should prefix the state slice', async () => {
+          const prefix = 'my-prefix';
+          const applicationScope = 'foo';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const type = LibraryType.DATA_ACCESS;
+          const scopeAppSpecific = 'my-awesome-app';
+          const name = 'my-awesome-app';
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
+          const schema = {
+            context,
+            scopeType,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'ngrxGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const reducer = appTree.read(reducerFilePath).toString();
+
+          expect(reducer).toContain(
+            `export const ${name.toUpperCase()}_FEATURE_KEY = '${context}_${scopeAppSpecific}_${name}';`
+          );
+        });
+      });
+    });
+
+    describe('Library type model', () => {
+      describe('Scope shared', () => {
+        it('should generate a library of type model', async () => {
+          const prefix = 'prefix';
+          const context = 'context';
+          const scopeType = ScopeType.SHARED;
+          const type = LibraryType.MODEL;
+          const name = 'test';
+          const modelFileName = `${context}-${scopeType}-${type}-${name}`;
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const specFilePath = `libs/${libpath}/src/lib/${modelFileName}.spec.ts`;
+          const modelFilePath = `libs/${libpath}/src/lib/${modelFileName}.ts`;
+          const indexFilePath = `libs/${libpath}/src/index.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const modelFileContent = appTree.read(modelFilePath).toString();
+          const indexFileContent = appTree.read(indexFilePath).toString();
+
+          expect(appTree.exists(specFilePath)).toBeFalsy();
+          expect(modelFileContent).toContain(
+            `export interface ${pascalCase(modelFileName)} {}`
+          );
+          expect(indexFileContent).toContain(
+            `export * from './lib/${modelFileName}';`
+          );
+        });
+      });
+
+      describe('Scope public', () => {
+        it('should generate a library of type model', async () => {
+          const prefix = 'prefix';
+          const context = 'context';
+          const scopeType = ScopeType.PUBLIC;
+          const type = LibraryType.MODEL;
+          const name = 'test';
+          const modelFileName = `${context}-${scopeType}-${type}-${name}`;
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const specFilePath = `libs/${libpath}/src/lib/${modelFileName}.spec.ts`;
+          const modelFilePath = `libs/${libpath}/src/lib/${modelFileName}.ts`;
+          const indexFilePath = `libs/${libpath}/src/index.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const modelFileContent = appTree.read(modelFilePath).toString();
+          const indexFileContent = appTree.read(indexFilePath).toString();
+
+          expect(appTree.exists(specFilePath)).toBeFalsy();
+          expect(modelFileContent).toContain(
+            `export interface ${pascalCase(modelFileName)} {}`
+          );
+          expect(indexFileContent).toContain(
+            `export * from './lib/${modelFileName}';`
+          );
+        });
+      });
+
+      describe('Scope app specific', () => {
+        it('should generate a library of type model', async () => {
+          const prefix = 'prefix';
+          const context = 'context';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scopeAppSpecific = 'my-awesome-app';
+          const type = LibraryType.MODEL;
+          const name = 'test';
+          const modelFileName = `${context}-${scopeAppSpecific}-${type}-${name}`;
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const specFilePath = `libs/${libpath}/src/lib/${modelFileName}.spec.ts`;
+          const modelFilePath = `libs/${libpath}/src/lib/${modelFileName}.ts`;
+          const indexFilePath = `libs/${libpath}/src/index.ts`;
+          const applicationScope = 'foo';
+          const schema = {
+            context,
+            scopeType,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(Promise.resolve(prefix));
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const modelFileContent = appTree.read(modelFilePath).toString();
+          const indexFileContent = appTree.read(indexFilePath).toString();
+
+          expect(appTree.exists(specFilePath)).toBeFalsy();
+          expect(modelFileContent).toContain(
+            `export interface ${pascalCase(modelFileName)} {}`
+          );
+          expect(indexFileContent).toContain(
+            `export * from './lib/${modelFileName}';`
+          );
+        });
       });
     });
   });

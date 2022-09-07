@@ -8,6 +8,12 @@ export function camelCase(str: string): string {
   );
 }
 
+export function snakeCase(str: string): string {
+  return str.replace(/[-_\s]+(.)?/g, (match, chr) =>
+    chr ? `_${chr.toLowerCase()}` : ''
+  );
+}
+
 export function pascalCase(str: string): string {
   return capitalize(camelCase(str));
 }

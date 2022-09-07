@@ -7,7 +7,7 @@ import {libraryGenerator as angularLibraryGenerator, ngrxGenerator} from '@nrwl/
 import {angularComponentGenerator, DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,} from '../utils/generators-angular';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
 import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
-import {pascalCase} from '../utils/string';
+import {camelCase, pascalCase, snakeCase} from '../utils/string';
 import {applicationPrompt} from '../prompts/application.prompt';
 
 import moduleBoundariesUpdate from '../module-boundaries-update/generator';
@@ -83,18 +83,22 @@ export default async function generateWorkspaceLibrary(
   });
 
   // adjust generated files
+  // TODO: is this even needed? In the test there is no difference between the generated files and the adjusted ones
   if (isAppSpecificLazyFeature) {
     const parentModuleFilePath = `apps/${context}/${scope}/src/app/app.module.ts`;
     const parentModuleFileContent = tree.read(parentModuleFilePath).toString();
+
     tree.write(
       parentModuleFilePath,
       parentModuleFileContent.replace(`${prefix}/${path}`, packageName)
     );
   }
+
   await updateJson(tree, `libs/${path}/package.json`, (pkgJson) => {
     pkgJson.name = packageName;
     return pkgJson;
   });
+
   await updateJson(tree, `tsconfig.base.json`, (tsconfig) => {
     delete tsconfig.compilerOptions.paths[`${prefix}/${path}`];
     tsconfig.compilerOptions.paths[packageName] = [`libs/${path}/src/index.ts`];
@@ -290,11 +294,10 @@ function prefixStateSlice(
 ) {
   const reducerFilePath = `./libs/${path}/src/lib/+state/${name}.reducer.ts`;
   const reducerContent = tree.read(reducerFilePath);
-
   const updatedContent = reducerContent
     .toString()
     .replace(
-      `export const ${name.toUpperCase()}_FEATURE_KEY = '${name}';`,
+      `export const ${snakeCase(name).toUpperCase()}_FEATURE_KEY = '${camelCase(name)}';`,
       `export const ${name.toUpperCase()}_FEATURE_KEY = '${context}${
         scopeAppSpecific ? `_${scopeAppSpecific}` : ''
       }_${name}';`
