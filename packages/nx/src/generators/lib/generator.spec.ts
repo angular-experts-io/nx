@@ -4,17 +4,16 @@ import {readJson, Tree} from '@nrwl/devkit';
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 
-
-import * as applicationPrompts from '../prompts/application.prompt';
-import * as configHelper from '../config/config.helper';
+import {pascalCase} from '../utils/string';
+import generateWorkspaceApp from '../app/generator';
 import {getContexts} from '../config/config.helper';
+import * as configHelper from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
-import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
-import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
+import * as applicationPrompts from '../prompts/application.prompt';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
 import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
-import generateWorkspaceApp from '../app/generator';
-import {pascalCase} from '../utils/string';
+import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
+import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
 
 import generateWorkspaceLibrary from './generator';
 
