@@ -1,22 +1,22 @@
+import * as inquirer from 'inquirer';
+import * as nrwlDevKit from '@nrwl/devkit';
 import {readJson, Tree} from '@nrwl/devkit';
+import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 
-import * as inquirer from 'inquirer';
 
-import * as nrwlDevKit from '@nrwl/devkit';
 import * as applicationPrompts from '../prompts/application.prompt';
 import * as configHelper from '../config/config.helper';
 import {getContexts} from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
 import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
-import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
-
-import generateWorkspaceLibrary from './generator';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
 import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
 import generateWorkspaceApp from '../app/generator';
 import {pascalCase} from '../utils/string';
+
+import generateWorkspaceLibrary from './generator';
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
@@ -364,7 +364,7 @@ describe('library generator', () => {
         });
 
         it(`should export the generated component
-  of a app-specific UI library from the index file`, async () => {
+          of a app-specific UI library from the index file`, async () => {
           const prefix = 'my-prefix';
           const applicationScope = 'foo';
           const context = 'my-awesome-context';
@@ -435,7 +435,7 @@ describe('library generator', () => {
         });
 
         it(`should export the generated component
-  of a shared UI library from the index file`, async () => {
+          of a shared UI library from the index file`, async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
           const scopeType = ScopeType.SHARED;
@@ -500,7 +500,7 @@ describe('library generator', () => {
         });
 
         it(`should export the generated component
-  of a public UI library from the index file`, async () => {
+          of a public UI library from the index file`, async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
           const scopeType = ScopeType.PUBLIC;
@@ -569,7 +569,7 @@ describe('library generator', () => {
         });
 
         it(`should export the generated component
-  of a app-specific UI library from the index file`, async () => {
+          of a app-specific UI library from the index file`, async () => {
           const prefix = 'my-prefix';
           const applicationScope = 'foo';
           const context = 'my-awesome-context';
@@ -1118,10 +1118,6 @@ describe('library generator', () => {
           );
         });
 
-        /*
-         TODO: add this test for public and shared scope as well and for other libtypes to
-         STARTING HERE:
-         */
         it('should adjust the package JSON', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
