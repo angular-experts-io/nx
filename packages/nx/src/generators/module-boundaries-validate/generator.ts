@@ -15,7 +15,6 @@ export interface Result {
   fixes: string[];
 }
 
-
 export default async function validateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesValidateGeneratorOptions
@@ -46,6 +45,7 @@ export default async function validateModuleBoundaries(
     await formatFiles(tree);
   }
   return () => {
+    console.log('Validations', aggregateViolations);
     if (aggregateViolations.filter(Boolean)?.length > 0) {
       if (aggregateFixes.filter(Boolean)?.length > 0) {
         console.log('\n');
@@ -134,11 +134,17 @@ async function validateEslintEnforceModuleBoundariesMatchesFolderStructure(
 Folder structure:       ${contextDirs.join(', ')}
 Difference:             ${chalk.inverse(contextDiff.join(', '))}`);
   }
-  const scopeApps = getFoldersFromTheeForDepth(tree, './apps', 1);
+  const scopeApps = getFoldersFromTheeForDepth(tree, './apps', 1)
+    // TODO: is this correct - should we filter out e2e?
+    .filter((item) => !item.endsWith('-e2e'));
   const scopeLibs = getFoldersFromTheeForDepth(tree, './libs', 1);
-  const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs])).filter(
-    (scope) => scope.endsWith('-rwc')
-  );
+  const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs]));
+  /*
+  TODO: uncomment this line if we decide that our apps will have a sufix
+  .filter(
+  (scope) => scope.endsWith('-rwc')
+);
+   */
   const scopeDiff = diff(scopes, scopeDirs);
   if (JSON.stringify(scopeDirs.sort()) !== JSON.stringify(scopes.sort())) {
     violations.push(`Scopes (definitions):   ${scopes.join(', ')}
@@ -208,4 +214,3 @@ async function getProjects(tree: Tree): Promise<Project[]> {
 function tagsDiffer(expectedTags: string[], tags: string[]): boolean {
   return JSON.stringify(expectedTags.sort()) !== JSON.stringify(tags.sort());
 }
-

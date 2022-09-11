@@ -1,20 +1,69 @@
-import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
-import { Tree, readProjectConfiguration } from '@nrwl/devkit';
+import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
+import {readJson, Tree} from '@nrwl/devkit';
 
-import generator from './generator';
-import { ModuleBoundariesValidateGeneratorSchema } from './schema';
+import generateWorkspaceApp from "../app/generator";
+import * as configHelper from "../config/config.helper";
+import validateModuleBoundaries from "./generator";
+
+const mockContexts = ['foo', 'bar', 'baz'];
+const mockPrefix = 'my-awesome-prefix';
+
+jest
+  .spyOn(configHelper, 'createConfigFileIfNonExisting')
+  .mockImplementation(() => Promise.resolve());
+
+jest
+  .spyOn(configHelper, 'getContexts')
+  .mockImplementation(() => Promise.resolve(mockContexts));
+
+jest
+  .spyOn(configHelper, 'getPrefix')
+  .mockImplementation(() => Promise.resolve(mockPrefix));
 
 describe('module-boundaries-validate generator', () => {
   let appTree: Tree;
-  const options: ModuleBoundariesValidateGeneratorSchema = { name: 'test' };
 
   beforeEach(() => {
-    appTree = createTreeWithEmptyWorkspace();
+    appTree = createTreeWithEmptyWorkspace(2);
   });
 
-  it('should run successfully', async () => {
-    await generator(appTree, options);
-    const config = readProjectConfiguration(appTree, 'test');
-    expect(config).toBeDefined();
-  })
+  it('should not throw an error the project tags are correct', async () => {
+    const context = 'foo';
+    const name = 'my-app';
+    const schema = {context, name};
+    const path = `apps/${context}/${name}`;
+
+    await generateWorkspaceApp(appTree, schema);
+    // TODO do we always get apps with angular.json or can it also be workspace.json?
+    appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
+
+
+    const projectJson = readJson(appTree, `${path}/project.json`);
+    console.log('projectJson', projectJson);
+
+    await expect(
+      async () => (await validateModuleBoundaries(appTree, {}))()
+    ).not.toThrow('Module boundaries validation failed');
+  });
+
+
+  it('should throw an error if the context is missing in the project tags', async () => {
+    const context = 'foo';
+    const name = 'my-app';
+    const path = `apps/${context}/${name}`;
+    const schema = {context, name};
+    const wrongTags = ['type:app'];
+
+    await generateWorkspaceApp(appTree, schema);
+    // TODO do we always get apps with angular.json or can it also be workspace.json?
+    appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
+
+    const projectJson = readJson(appTree, `${path}/project.json`);
+    projectJson.tags = wrongTags;
+    appTree.write(`${path}/project.json`, projectJson);
+
+    await expect(
+      async () => (await validateModuleBoundaries(appTree, {}))()
+    ).rejects.toThrow('Module boundaries validation failed');
+  });
 });
