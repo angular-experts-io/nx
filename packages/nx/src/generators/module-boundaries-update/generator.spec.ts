@@ -1,38 +1,80 @@
-import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
-import { Tree, readProjectConfiguration } from '@nrwl/devkit';
+import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
+import {Tree, readJson} from '@nrwl/devkit';
+
+import generateWorkspaceApp from "../app/generator";
+import * as configHelper from "../config/config.helper";
+import * as applicationPrompts from "../prompts/application.prompt";
+
+import updateModuleBoundaries from "./generator";
+
+jest
+  .spyOn(configHelper, 'createConfigFileIfNonExisting')
+  .mockImplementation(() => Promise.resolve());
 
 
-describe('module-boundaries-update generator', () => {
+const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
+
+describe('module-boundaries-update', () => {
   let appTree: Tree;
 
   beforeEach(() => {
-    appTree = createTreeWithEmptyWorkspace();
+    appTree = createTreeWithEmptyWorkspace(2);
   });
 
-  describe('Get grouped tags', () => {
-    it('should work', () => {
-      const depConstraints = [
-        {
-          sourceTag: 'scope:test',
-          onlyDependOnLibsWithTags: [
-            'scope:public',
-            'scope:shared',
-            'scope:test',
-          ],
-        },
-        {
-          sourceTag: 'context:foo',
-          onlyDependOnLibsWithTags: ['context:foo', 'scope:public'],
-        },
-        {
-          sourceTag: '*',
-          onlyDependOnLibsWithTags: ['*'],
-        },
-      ];
+  it('should add new context', async () => {
+    const context = 'foo';
+    const appName = 'my-app';
+    const schema = {
+      context
+    };
+    const expectedDependOnLibsTags = [`context:${context}`, 'scope:public'];
+    const expectedConstraint = {
+      sourceTag: `context:${context}`,
+      onlyDependOnLibsWithTags: expectedDependOnLibsTags,
+    }
 
-      // TODO implement this test
+    jest
+      .spyOn(applicationPrompts, 'applicationPrompt')
+      .mockReturnValue(Promise.resolve(appName));
 
-      expect(true).toBe(true);
-    });
+    await generateWorkspaceApp(appTree, {context, name: appName});
+    await updateModuleBoundaries(appTree, schema);
+
+    const eslintJson = readJson(appTree, '.eslintrc.json');
+    const depConstraints = eslintJson.overrides[0].rules[ENFORCE_MODULE_BOUNDARIES][1].depConstraints;
+
+    const addedDepConstraint = depConstraints.find((c) => c.sourceTag === expectedConstraint.sourceTag);
+    expect(addedDepConstraint.onlyDependOnLibsWithTags).toEqual(expectedDependOnLibsTags);
+  });
+
+  it('should add new scope', async () => {
+    const context = 'foo';
+    const scope = 'brand-new-scope';
+    const appName = 'my-app';
+    const schema = {
+      scope
+    };
+    const expectedDependOnLibsTags = [
+      'scope:public',
+      'scope:shared',
+      `scope:${scope}`,
+    ];
+    const expectedConstraint = {
+      sourceTag: `scope:${scope}`,
+      onlyDependOnLibsWithTags: expectedDependOnLibsTags,
+    }
+
+    jest
+      .spyOn(applicationPrompts, 'applicationPrompt')
+      .mockReturnValue(Promise.resolve(appName));
+
+    await generateWorkspaceApp(appTree, {context, name: appName});
+    await updateModuleBoundaries(appTree, schema);
+
+    const eslintJson = readJson(appTree, '.eslintrc.json');
+    const depConstraints = eslintJson.overrides[0].rules[ENFORCE_MODULE_BOUNDARIES][1].depConstraints;
+
+    const addedDepConstraint = depConstraints.find((c) => c.sourceTag === expectedConstraint.sourceTag);
+    expect(addedDepConstraint.onlyDependOnLibsWithTags).toEqual(expectedDependOnLibsTags);
   });
 });
