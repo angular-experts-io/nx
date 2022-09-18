@@ -24,7 +24,7 @@ export default async function move(tree: Tree, schema: MoveSchema) {
   }
 
   const angularJSON = readJson(tree, './angular.json');
-  const isApplication = angularJSON.projects[projectName].includes('apps');
+  const isApplication = angularJSON.projects[projectName]?.includes('apps');
 
   if (!destination) {
 
