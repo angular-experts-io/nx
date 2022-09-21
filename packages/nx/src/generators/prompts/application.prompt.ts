@@ -8,6 +8,9 @@ export async function applicationPrompt(
   tree: Tree,
   context: string
 ): Promise<string> {
+
+  // TODO: should we call the context prompt here? similar to how we do inside projectPrompt?
+
   const filteredApplications = Array.from(getProjects(tree))
     .filter(
       ([project, config]) =>
