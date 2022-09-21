@@ -6,6 +6,7 @@ export function extractName(
 ) {
   return applicationType === ProjectTypes.APP
     ? getNameSubstring(projectName, 1)
+    // TODO: does this work for all cases? what about data-access?
     : getNameSubstring(projectName, 3);
 }
 
