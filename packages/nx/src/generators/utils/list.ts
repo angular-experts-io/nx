@@ -1,4 +1,4 @@
-export function diff(a: any[], b: any[]) {
+export function diff<T>(a: T[], b: T[]): T[] {
   return Array.from(
     new Set(
       a
