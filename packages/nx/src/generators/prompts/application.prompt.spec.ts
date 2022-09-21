@@ -1,8 +1,9 @@
-import {applicationPrompt} from "./application.prompt";
 import {createTreeWithEmptyWorkspace} from "@nrwl/devkit/testing";
 import * as nrwlDevkit from '@nrwl/devkit';
 import * as inquirier from "inquirer";
 import {Tree} from "@nrwl/devkit";
+
+import {applicationPrompt} from "./application.prompt";
 
 describe('ApplicationPrompt', () => {
 
