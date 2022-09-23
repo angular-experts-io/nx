@@ -16,8 +16,8 @@ jobs:
         uses: actions/setup-node@v3
       - name: Install node modules
         run: npm ci
-      - name: Test
-        run: npm run test
+      - name: Test & Coverage
+        run: npm run test:coverage
       - name: report coverage
         uses: coverallsapp/github-action@1.1.3
         with:
