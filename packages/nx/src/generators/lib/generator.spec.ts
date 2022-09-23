@@ -181,7 +181,7 @@ describe('library generator', () => {
       await generateWorkspaceLibrary(appTree, librarySchema);
       expect(applicationPrompts.applicationPrompt).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining(context)
+        context
       );
     });
   });
