@@ -6,7 +6,7 @@
     "start": "nx serve",
     "build": "nx run nx:build",
     "test": "nx run nx:test",
-    "test:coverage": "nx run nx:test --codeCoverage"
+    "test:coverage": "nx run nx:test --codeCoverage --coverageReporters=lcov"
   },
   "private": true,
   "dependencies": {
