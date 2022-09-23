@@ -19,7 +19,6 @@ describe('Config helper', () => {
     const expectedPrefix = 'my-awesome-company';
 
     inquirer.prompt.mockImplementation((config) => {
-      console.log('Name', config.name);
       if (config.name === 'availableContexts') {
         return Promise.resolve({
           availableContexts: expectedContexts.join(','),
@@ -27,7 +26,6 @@ describe('Config helper', () => {
       }
 
       if (config.name === 'companyPrefix') {
-        console.log('Return companyPrefix', expectedPrefix);
         return Promise.resolve({
           companyPrefix: expectedPrefix,
         });

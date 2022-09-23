@@ -37,10 +37,6 @@ describe('module-boundaries-validate generator', () => {
     // TODO do we always get apps with angular.json or can it also be workspace.json?
     appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
 
-
-    const projectJson = readJson(appTree, `${path}/project.json`);
-    console.log('projectJson', projectJson);
-
     await expect(
       async () => (await validateModuleBoundaries(appTree, {}))()
     ).not.toThrow('Module boundaries validation failed');
