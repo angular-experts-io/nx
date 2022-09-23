@@ -16,6 +16,7 @@ import * as moduleBoundariesGenerator from '../module-boundaries-update/generato
 import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
 
 import generateWorkspaceLibrary from './generator';
+import exp = require("constants");
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
@@ -180,7 +181,7 @@ describe('library generator', () => {
       await generateWorkspaceLibrary(appTree, librarySchema);
       expect(applicationPrompts.applicationPrompt).toHaveBeenCalledWith(
         expect.anything(),
-        context
+        expect.objectContaining(context)
       );
     });
   });
@@ -230,12 +231,13 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -295,12 +297,13 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -364,12 +367,13 @@ describe('library generator', () => {
 
         expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -435,12 +439,13 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -500,12 +505,13 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -569,12 +575,13 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
               name: schema.name,
               selector,
-            }
+            })
           );
         });
 
@@ -641,6 +648,7 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -648,7 +656,7 @@ describe('library generator', () => {
               module,
               export: false,
               selector,
-            }
+            })
           );
         });
 
@@ -861,6 +869,7 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -868,7 +877,7 @@ describe('library generator', () => {
               module,
               export: false,
               selector,
-            }
+            })
           );
         });
 
@@ -1440,13 +1449,14 @@ describe('library generator', () => {
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
               directory: '+state',
               minimal: false,
               useDataPersistence: true,
-            }
+            })
           );
         });
 
@@ -1517,13 +1527,14 @@ describe('library generator', () => {
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
               directory: '+state',
               minimal: false,
               useDataPersistence: true,
-            }
+            })
           );
         });
 
