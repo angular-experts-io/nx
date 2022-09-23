@@ -179,7 +179,7 @@ describe('library generator', () => {
       await generateWorkspaceApp(appTree, {name: appName, context});
       await generateWorkspaceLibrary(appTree, librarySchema);
       expect(applicationPrompts.applicationPrompt).toHaveBeenCalledWith(
-        appTree,
+        expect.anything(),
         context
       );
     });
@@ -229,7 +229,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -293,7 +293,15 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalled();
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: schema.name,
+              selector,
+            }
+          );
         });
 
         it(`should export the generated component
@@ -311,50 +319,58 @@ describe('library generator', () => {
             name,
           };
 
-          jest.spyOn(generatorUtils, 'angularComponentGenerator');
-          jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+        jest.spyOn(generatorUtils, 'angularComponentGenerator');
+        jest
+          .spyOn(configHelper, 'getPrefix')
+          .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceLibrary(appTree, schema);
+        await generateWorkspaceLibrary(appTree, schema);
 
-          const indexFile = appTree
-            .read(`libs/${libpath}/src/index.ts`)
-            .toString();
-          expect(indexFile).toContain(
-            `export * from './lib/${schema.name}/${schema.name}.component';`
-          );
-        });
+        const indexFile = appTree
+          .read(`libs/${libpath}/src/index.ts`)
+          .toString();
+        expect(indexFile).toContain(
+          `export * from './lib/${schema.name}/${schema.name}.component';`
+        );
       });
+    });
 
-      describe('App scope', () => {
-        it('should generate a library of type UI', async () => {
-          const prefix = 'prefix';
-          const applicationScope = 'foo';
-          const context = 'context';
-          const scopeType = ScopeType.APP_SPECIFIC;
-          const type = LibraryType.UI;
-          const name = 'test';
-          const project = `${context}-${applicationScope}-${type}-${name}`;
-          const selector = `${prefix}-${context}-${applicationScope}-${name}`;
-          const schema = {
-            context,
-            scopeType,
-            type,
-            name,
-          };
+    describe('App scope', () => {
+      it('should generate a library of type UI', async () => {
+        const prefix = 'prefix';
+        const applicationScope = 'foo';
+        const context = 'context';
+        const scopeType = ScopeType.APP_SPECIFIC;
+        const type = LibraryType.UI;
+        const name = 'test';
+        const project = `${context}-${applicationScope}-${type}-${name}`;
+        const selector = `${prefix}-${context}-${applicationScope}-${name}`;
+        const schema = {
+          context,
+          scopeType,
+          type,
+          name,
+        };
 
-          jest
-            .spyOn(applicationPrompts, 'applicationPrompt')
-            .mockReturnValue(Promise.resolve(applicationScope));
-          jest.spyOn(generatorUtils, 'angularComponentGenerator');
-          jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+        jest
+          .spyOn(applicationPrompts, 'applicationPrompt')
+          .mockReturnValue(Promise.resolve(applicationScope));
+        jest.spyOn(generatorUtils, 'angularComponentGenerator');
+        jest
+          .spyOn(configHelper, 'getPrefix')
+          .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceLibrary(appTree, schema);
+        await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalled();
+        expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: schema.name,
+              selector,
+            }
+          );
         });
 
         it(`should export the generated component
@@ -417,7 +433,15 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: schema.name,
+              selector,
+            }
+          );
         });
 
         it(`should export the generated component
@@ -474,7 +498,15 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: schema.name,
+              selector,
+            }
+          );
         });
 
         it(`should export the generated component
@@ -535,7 +567,15 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: schema.name,
+              selector,
+            }
+          );
         });
 
         it(`should export the generated component
@@ -599,7 +639,17 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            {
+              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+              project,
+              name: `${schema.name}-container`,
+              module,
+              export: false,
+              selector,
+            }
+          );
         });
 
         it('should adjust the package JSON', async () => {
@@ -810,7 +860,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -927,7 +977,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {context, scope: scopeType, type}
           );
         });
@@ -1039,7 +1089,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -1313,7 +1363,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
@@ -1389,7 +1439,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
@@ -1466,7 +1516,7 @@ describe('library generator', () => {
           await generateWorkspaceLibrary(appTree, schema);
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
-            appTree,
+            expect.anything(),
             {
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
