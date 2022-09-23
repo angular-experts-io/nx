@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx run nx:build",
-    "test": "nx run nx:test"
+    "test": "nx run nx:test",
+    "test:coverage": "nx run nx:test --coverage"
   },
   "private": true,
   "dependencies": {
