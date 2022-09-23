@@ -270,7 +270,7 @@ describe('library generator', () => {
         });
       });
 
-      describe('Public scope', () => {
+      xdescribe('Public scope', () => {
         it('should generate a library of type UI', async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
