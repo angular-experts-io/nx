@@ -25,6 +25,10 @@ describe('move generator', () => {
     tree = createTreeWithEmptyWorkspace(2);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should delete the project and the end to end project if we want to delete all deps', async () => {
     const projectName = 'nx';
     await applicationGenerator(tree, {name: projectName});

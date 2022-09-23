@@ -87,7 +87,6 @@ async function promptMissingSchemaProperties(
 
 function validateName(name: string): void {
   if (name.includes(' ')) {
-    console.log('Hier');
     throw new Error(
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
     );

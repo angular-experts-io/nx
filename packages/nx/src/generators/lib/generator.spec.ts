@@ -1,19 +1,19 @@
 import * as inquirer from 'inquirer';
 import * as nrwlDevKit from '@nrwl/devkit';
-import {readJson, Tree} from '@nrwl/devkit';
+import { readJson, Tree } from '@nrwl/devkit';
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
-import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
+import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
 
-import {pascalCase} from '../utils/string';
+import { pascalCase } from '../utils/string';
 import generateWorkspaceApp from '../app/generator';
-import {getContexts} from '../config/config.helper';
+import { getContexts } from '../config/config.helper';
 import * as configHelper from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
 import * as applicationPrompts from '../prompts/application.prompt';
-import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
-import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
-import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
+import { getAvailableScopeTypes, ScopeType } from '../model/scope-type';
+import { AVAILABLE_LIBRARY_TYPES, LibraryType } from '../model/library-type';
 import * as moduleBoundariesGenerator from '../module-boundaries-update/generator';
+import { DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS } from '../utils/generators-angular';
 
 import generateWorkspaceLibrary from './generator';
 
@@ -73,7 +73,7 @@ describe('library generator', () => {
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => Promise.resolve({context}));
+        .mockImplementation(() => Promise.resolve({ context }));
 
       await generateWorkspaceLibrary(appTree, schema);
       expect(inquirer.prompt).toHaveBeenCalledWith([
@@ -97,7 +97,7 @@ describe('library generator', () => {
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => Promise.resolve({name}));
+        .mockImplementation(() => Promise.resolve({ name }));
 
       await generateWorkspaceLibrary(appTree, schema);
       expect(inquirer.prompt).toHaveBeenCalledWith([
@@ -120,7 +120,7 @@ describe('library generator', () => {
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => Promise.resolve({scopeType}));
+        .mockImplementation(() => Promise.resolve({ scopeType }));
 
       await generateWorkspaceLibrary(appTree, schema);
       expect(inquirer.prompt).toHaveBeenCalledWith([
@@ -143,7 +143,7 @@ describe('library generator', () => {
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => Promise.resolve({type}));
+        .mockImplementation(() => Promise.resolve({ type }));
 
       await generateWorkspaceLibrary(appTree, schema);
       expect(inquirer.prompt).toHaveBeenCalledWith([
@@ -158,18 +158,25 @@ describe('library generator', () => {
 
     it(`should call the application prompts for app specific scopeType
         and missing app specific scope`, async () => {
-      const schema = {
-        context: 'my-awesome-context',
+      const appName = 'my-awesome-app';
+      const context = 'my-awesome-context';
+      const librarySchema = {
+        context,
         scopeType: ScopeType.APP_SPECIFIC,
         type: LibraryType.FEATURE,
-        name: 'my-awesome-name',
+        name: 'my-awesome-lib',
+        appName,
       };
-      jest.spyOn(applicationPrompts, 'applicationPrompt');
 
-      await generateWorkspaceLibrary(appTree, schema);
+      jest
+        .spyOn(applicationPrompts, 'applicationPrompt')
+        .mockReturnValue(Promise.resolve(appName));
+
+      await generateWorkspaceApp(appTree, { name: appName, context });
+      await generateWorkspaceLibrary(appTree, librarySchema);
       expect(applicationPrompts.applicationPrompt).toHaveBeenCalledWith(
         appTree,
-        schema.context
+        context
       );
     });
   });
@@ -669,14 +676,13 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const packageJSON = readJson(appTree, packageJSONPath);
 
           expect(packageJSON.name).toBe(packageName);
         });
-
 
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
@@ -705,12 +711,16 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const tsconfig = readJson(appTree, `tsconfig.base.json`);
-          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
-          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+          expect(
+            tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]
+          ).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([
+            `libs/${libpath}/src/index.ts`,
+          ]);
         });
 
         it('should call the moduleBoundaries updates', async () => {
@@ -739,11 +749,12 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
-            appTree, {context, scope: scopeType, type}
+            appTree,
+            { context, scope: scopeType, type }
           );
         });
 
@@ -775,7 +786,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
@@ -801,7 +812,9 @@ describe('library generator', () => {
           };
 
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(nrwlDevKit, 'installPackagesTask')
+            .mockImplementation(() => () => {});
           jest
             .spyOn(applicationPrompts, 'applicationPrompt')
             .mockReturnValue(Promise.resolve(appName));
@@ -810,7 +823,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           (await generateWorkspaceLibrary(appTree, librarySchema))();
 
           expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
@@ -882,14 +895,13 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const packageJSON = readJson(appTree, packageJSONPath);
 
           expect(packageJSON.name).toBe(packageName);
         });
-
 
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
@@ -918,12 +930,16 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const tsconfig = readJson(appTree, `tsconfig.base.json`);
-          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
-          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+          expect(
+            tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]
+          ).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([
+            `libs/${libpath}/src/index.ts`,
+          ]);
         });
 
         it('should call the moduleBoundaries updates', async () => {
@@ -952,11 +968,12 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
-            appTree, {context, scope: scopeType, type}
+            appTree,
+            { context, scope: scopeType, type }
           );
         });
 
@@ -988,7 +1005,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
@@ -1014,7 +1031,9 @@ describe('library generator', () => {
           };
 
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(nrwlDevKit, 'installPackagesTask')
+            .mockImplementation(() => () => {});
           jest
             .spyOn(applicationPrompts, 'applicationPrompt')
             .mockReturnValue(Promise.resolve(appName));
@@ -1023,7 +1042,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           (await generateWorkspaceLibrary(appTree, librarySchema))();
 
           expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
@@ -1060,7 +1079,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
@@ -1106,7 +1125,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const appModuleContent = appTree.read(modulePath).toString();
@@ -1147,14 +1166,13 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const packageJSON = readJson(appTree, packageJSONPath);
 
           expect(packageJSON.name).toBe(packageName);
         });
-
 
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
@@ -1185,12 +1203,16 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           const tsconfig = readJson(appTree, `tsconfig.base.json`);
-          expect(tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]).not.toBeDefined();
-          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([`libs/${libpath}/src/index.ts`]);
+          expect(
+            tsconfig.compilerOptions.paths[`${prefix}/${libpath}`]
+          ).not.toBeDefined();
+          expect(tsconfig.compilerOptions.paths[packageName]).toEqual([
+            `libs/${libpath}/src/index.ts`,
+          ]);
         });
 
         it('should call the moduleBoundaries updates', async () => {
@@ -1221,11 +1243,12 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
-            appTree, {context, scope: scopeAppSpecific}
+            appTree,
+            { context, scope: scopeAppSpecific }
           );
         });
 
@@ -1257,7 +1280,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(nrwlDevKit.formatFiles).toHaveBeenCalled();
@@ -1283,7 +1306,9 @@ describe('library generator', () => {
           };
 
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+          jest
+            .spyOn(nrwlDevKit, 'installPackagesTask')
+            .mockImplementation(() => () => {});
           jest
             .spyOn(applicationPrompts, 'applicationPrompt')
             .mockReturnValue(Promise.resolve(appName));
@@ -1292,7 +1317,7 @@ describe('library generator', () => {
             .spyOn(configHelper, 'getPrefix')
             .mockReturnValue(Promise.resolve(prefix));
 
-          await generateWorkspaceApp(appTree, {context, name: appName});
+          await generateWorkspaceApp(appTree, { context, name: appName });
           (await generateWorkspaceLibrary(appTree, librarySchema))();
 
           expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();

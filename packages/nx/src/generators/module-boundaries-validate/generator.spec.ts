@@ -1,5 +1,5 @@
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
-import {readJson, Tree} from '@nrwl/devkit';
+import {readJson, Tree, updateJson} from '@nrwl/devkit';
 
 import generateWorkspaceApp from "../app/generator";
 import * as configHelper from "../config/config.helper";
@@ -58,9 +58,10 @@ describe('module-boundaries-validate generator', () => {
     // TODO do we always get apps with angular.json or can it also be workspace.json?
     appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
 
-    const projectJson = readJson(appTree, `${path}/project.json`);
-    projectJson.tags = wrongTags;
-    appTree.write(`${path}/project.json`, projectJson);
+    updateJson(appTree, `${path}/project.json`, projectJson => {
+      projectJson.tags = wrongTags;
+      return projectJson;
+    });
 
     await expect(
       async () => (await validateModuleBoundaries(appTree, {}))()

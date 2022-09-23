@@ -33,7 +33,6 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
 
 
   if (!configFile?.prefix) {
-    console.log('Da');
     prefix = await inquirer.prompt({
       name: 'companyPrefix',
       message:

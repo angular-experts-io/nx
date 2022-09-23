@@ -45,7 +45,6 @@ export default async function validateModuleBoundaries(
     await formatFiles(tree);
   }
   return () => {
-    console.log('Validations', aggregateViolations);
     if (aggregateViolations.filter(Boolean)?.length > 0) {
       if (aggregateFixes.filter(Boolean)?.length > 0) {
         console.log('\n');

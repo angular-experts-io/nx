@@ -35,6 +35,8 @@ jest.mock('@nrwl/workspace/generators', () => {
   };
 });
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 describe('app generator', () => {
   let appTree: Tree;
