@@ -1103,6 +1103,7 @@ describe('library generator', () => {
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
+            expect.objectContaining(
             {
               ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
               project,
@@ -1110,7 +1111,7 @@ describe('library generator', () => {
               module: moduleName,
               export: false,
               selector,
-            }
+            })
           );
         });
 
@@ -1377,13 +1378,13 @@ describe('library generator', () => {
 
           expect(nrwlAngularGenerators.ngrxGenerator).toHaveBeenCalledWith(
             expect.anything(),
-            {
+            expect.objectContaining({
               name: schema.name,
               module: `libs/${libpath}/src/lib/${moduleName}.ts`,
               directory: '+state',
               minimal: false,
               useDataPersistence: true,
-            }
+            })
           );
         });
 
