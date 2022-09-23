@@ -270,7 +270,7 @@ describe('library generator', () => {
         });
       });
 
-      xdescribe('Public scope', () => {
+      describe('Public scope', () => {
         it('should generate a library of type UI', async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
@@ -293,15 +293,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: schema.name,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalled();
         });
 
         it(`should export the generated component
@@ -362,15 +354,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: schema.name,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalled();
         });
 
         it(`should export the generated component
@@ -433,15 +417,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: schema.name,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
         });
 
         it(`should export the generated component
@@ -498,15 +474,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: schema.name,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
         });
 
         it(`should export the generated component
@@ -567,15 +535,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: schema.name,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
         });
 
         it(`should export the generated component
@@ -639,17 +599,7 @@ describe('library generator', () => {
 
           await generateWorkspaceLibrary(appTree, schema);
 
-          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
-            appTree,
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: `${schema.name}-container`,
-              module,
-              export: false,
-              selector,
-            }
-          );
+          expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith();
         });
 
         it('should adjust the package JSON', async () => {
