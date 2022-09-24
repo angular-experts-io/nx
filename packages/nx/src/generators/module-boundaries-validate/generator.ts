@@ -1,9 +1,10 @@
 import * as chalk from 'chalk';
-import { formatFiles, readJson, Tree, updateJson } from '@nrwl/devkit';
+import {formatFiles, readJson, Tree, updateJson} from '@nrwl/devkit';
 
-import { diff } from '../utils/list';
+import {diff} from '../utils/list';
 
-import { ModuleBoundariesValidateGeneratorOptions } from './schema';
+import {ModuleBoundariesValidateGeneratorOptions} from './schema';
+import {getAppSuffix} from "../config/config.helper";
 
 export interface Project {
   name: string;
@@ -19,7 +20,7 @@ export default async function validateModuleBoundaries(
   tree: Tree,
   schema: ModuleBoundariesValidateGeneratorOptions
 ): Promise<() => void> {
-  const { fix } = schema;
+  const {fix} = schema;
 
   const projects = await getProjects(tree);
   const aggregateViolations = [];
@@ -31,7 +32,7 @@ export default async function validateModuleBoundaries(
       project,
       fix
     );
-    const { violations, fixes } = result;
+    const {violations, fixes} = result;
     aggregateFixes.push(...fixes);
     aggregateViolations.push(...violations);
   }
@@ -60,7 +61,7 @@ async function validateProjectTagsMatchProjectLocation(
   project: Project,
   fix = false
 ): Promise<Result> {
-  const { name, path } = project;
+  const {name, path} = project;
   const violations = [];
   const fixes = [];
   const [appsOrLibs, context, scopeOrName, type] = path.split('/');
@@ -136,13 +137,10 @@ Difference:             ${chalk.inverse(contextDiff.join(', '))}`);
   const scopeApps = getFoldersFromTheeForDepth(tree, './apps', 1)
     .filter((item) => !item.endsWith('-e2e'));
   const scopeLibs = getFoldersFromTheeForDepth(tree, './libs', 1);
-  const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs]));
-  /*
-  TODO: uncomment this line if we decide that our apps will have a sufix
-  .filter(
-  (scope) => scope.endsWith('-rwc')
-);
-   */
+  const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs]))
+    .filter(
+      (scope) => scope.endsWith(getAppSuffix(tree))
+    );
   const scopeDiff = diff(scopes, scopeDirs);
   if (JSON.stringify(scopeDirs.sort()) !== JSON.stringify(scopes.sort())) {
     violations.push(`Scopes (definitions):   ${scopes.join(', ')}

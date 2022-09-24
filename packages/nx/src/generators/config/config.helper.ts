@@ -61,25 +61,42 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   tree.write(
     CONFIG_FILE_NAME,
     JSON.stringify({
-      contexts: contexts ? contexts.availableContexts.split(','): DEFAULT_CONFIG_OPTIONS.contexts,
+      contexts: contexts ? contexts.availableContexts.split(',') : DEFAULT_CONFIG_OPTIONS.contexts,
       prefix: prefix.companyPrefix || DEFAULT_CONFIG_OPTIONS.prefix,
       appSuffix: appSuffix.suffix || DEFAULT_CONFIG_OPTIONS.appSuffix
     })
   );
 }
 
-// TODO: let the user reenter the prefix if no prefix is given
 export function getPrefix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
-  return JSON.parse(configurationFileBuffer.toString()).prefix;
+  const prefixFromConfigFile = JSON.parse(configurationFileBuffer.toString()).prefix;
+  if (prefixFromConfigFile) {
+    printWarningMessageForMissingConfigProperty('prefix', DEFAULT_CONFIG_OPTIONS.prefix);
+  }
+  return prefixFromConfigFile || DEFAULT_CONFIG_OPTIONS.prefix;
 }
 
 export function getContexts(tree: Tree): string[] | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
-  return JSON.parse(configurationFileBuffer.toString()).contexts;
+  const contextFromConfigFile = JSON.parse(configurationFileBuffer.toString()).contexts;
+  if (contextFromConfigFile) {
+    printWarningMessageForMissingConfigProperty('contexts', `[${DEFAULT_CONFIG_OPTIONS.contexts.join(', ')}]`);
+  }
+  return contextFromConfigFile || DEFAULT_CONFIG_OPTIONS.contexts;
 }
 
 export function getAppSuffix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
-  return JSON.parse(configurationFileBuffer.toString()).appSuffix;
+  const appSuffixFromConfigFile = JSON.parse(configurationFileBuffer.toString()).appSuffix;
+  if (appSuffixFromConfigFile) {
+    printWarningMessageForMissingConfigProperty('appSuffix', DEFAULT_CONFIG_OPTIONS.appSuffix);
+  }
+  return appSuffixFromConfigFile || DEFAULT_CONFIG_OPTIONS.appSuffix;
+}
+
+function printWarningMessageForMissingConfigProperty(propertyName: string, defaultValue: string) {
+  console.warn(`No value for ${propertyName} was found in ${CONFIG_FILE_NAME}.
+    Using default ${propertyName}: ${defaultValue},
+    feel free to adjust the ${propertyName} property it in ${CONFIG_FILE_NAME}.`);
 }
