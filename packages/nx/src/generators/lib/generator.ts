@@ -17,7 +17,6 @@ import {LibGeneratorOptions} from './schema';
 
 export default async function generateWorkspaceLibrary(
   tree: Tree,
-  // TODO: remove prefix from library options
   schema: LibGeneratorOptions
 ) {
   await createConfigFileIfNonExisting(tree);
@@ -84,7 +83,6 @@ export default async function generateWorkspaceLibrary(
   });
 
   // adjust generated files
-  // TODO: is this even needed? In the test there is no difference between the generated files and the adjusted ones
   if (isAppSpecificLazyFeature) {
     const parentModuleFilePath = `apps/${context}/${scope}/src/app/app.module.ts`;
     const parentModuleFileContent = tree.read(parentModuleFilePath).toString();

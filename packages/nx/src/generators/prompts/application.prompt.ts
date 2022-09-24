@@ -1,15 +1,21 @@
 import * as inquirer from 'inquirer';
 import * as inquirerPrompt from 'inquirer-autocomplete-prompt';
-import { getProjects, Tree } from '@nrwl/devkit';
+import {getProjects, Tree} from '@nrwl/devkit';
+import {contextPrompt} from "./context.prompt";
 
 inquirer.registerPrompt('autocomplete', inquirerPrompt);
 
 export async function applicationPrompt(
   tree: Tree,
-  context: string
+  context?: string
 ): Promise<string> {
 
-  // TODO: should we call the context prompt here? similar to how we do inside projectPrompt?
+  if (!context) {
+    context = await contextPrompt(
+      tree,
+      'Which context does your project belong to'
+    );
+  }
 
   const filteredApplications = Array.from(getProjects(tree))
     .filter(
@@ -18,7 +24,7 @@ export async function applicationPrompt(
         !project.endsWith('e2e') &&
         config.projectType === 'application'
     )
-    .map(([project, config]) => project.replace(`${context}-`, ''));
+    .map(([project]) => project.replace(`${context}-`, ''));
 
   if (filteredApplications.length > 0) {
     const applicationList = await inquirer.prompt({

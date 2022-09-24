@@ -134,7 +134,6 @@ Folder structure:       ${contextDirs.join(', ')}
 Difference:             ${chalk.inverse(contextDiff.join(', '))}`);
   }
   const scopeApps = getFoldersFromTheeForDepth(tree, './apps', 1)
-    // TODO: is this correct - should we filter out e2e?
     .filter((item) => !item.endsWith('-e2e'));
   const scopeLibs = getFoldersFromTheeForDepth(tree, './libs', 1);
   const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs]));

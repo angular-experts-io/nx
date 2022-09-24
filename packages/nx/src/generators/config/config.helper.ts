@@ -68,6 +68,7 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   );
 }
 
+// TODO: let the user reenter the prefix if no prefix is given
 export function getPrefix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString()).prefix;

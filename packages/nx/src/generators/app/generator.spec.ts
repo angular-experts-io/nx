@@ -59,7 +59,6 @@ describe('app generator', () => {
 
   describe('Missing Schema Properties', () => {
     it('should prompt for missing context', async () => {
-      // TODO evaluate if context can also be CamelCase - if not handle this accordingly
       const schema = {
         name: 'name',
         prefix: 'prefix',
@@ -88,7 +87,6 @@ describe('app generator', () => {
     });
 
     it('should prompt for missing name', async () => {
-      // TODO evaluate if name can also be CamelCase - if not handle this accordingly
       const appName = 'myawesomeapp';
       const schema = {
         context: 'context',
@@ -109,8 +107,6 @@ describe('app generator', () => {
         },
       ]);
     });
-
-    // TODO check if prefix will be refactored - if not test it here as well
   });
 
   describe('Name', () => {
@@ -402,7 +398,6 @@ describe('app generator', () => {
         name: 'my-awesome-name',
         prefix: 'my-awesome-prefix'
       }
-
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
 
@@ -410,8 +405,5 @@ describe('app generator', () => {
 
       expect(nrwlDevKit.installPackagesTask).toHaveBeenCalled();
     });
-
   });
-
-
 });
