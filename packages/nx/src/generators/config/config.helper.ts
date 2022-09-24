@@ -6,7 +6,15 @@ export const CONFIG_FILE_NAME = '.ax.config.json';
 interface ConfigFile {
   contexts?: string[];
   prefix?: string;
+  appSuffix?: string;
 }
+
+const DEFAULT_CONFIG_OPTIONS: ConfigFile = {
+  contexts: ['sales', 'supply', 'production'],
+  prefix: 'my-app',
+  appSuffix: 'app'
+}
+
 
 export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
@@ -22,12 +30,14 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
 
   let contexts;
   let prefix;
+  let appSuffix;
 
   if (!configFile?.contexts) {
     contexts = await inquirer.prompt({
       name: 'availableContexts',
       message:
-        'Please enter all contexts (comma separated) you want to use in your project.',
+        `Please enter all contexts (comma separated) you want to use in your project.
+        (default: ${DEFAULT_CONFIG_OPTIONS.contexts.join(', ')})`,
     });
   }
 
@@ -36,7 +46,15 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
     prefix = await inquirer.prompt({
       name: 'companyPrefix',
       message:
-        'Please enter your company prefix or company name',
+        `Please enter your company prefix or company name. (default: ${DEFAULT_CONFIG_OPTIONS.prefix})`,
+    });
+  }
+
+  if (!configFile?.appSuffix) {
+    appSuffix = await inquirer.prompt({
+      name: 'suffix',
+      message:
+        `Please enter a suffix for generated applications. (default: ${DEFAULT_CONFIG_OPTIONS.appSuffix})`,
     });
   }
 
@@ -44,17 +62,23 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
     CONFIG_FILE_NAME,
     JSON.stringify({
       contexts: contexts.availableContexts.split(','),
-      prefix: prefix.companyPrefix
+      prefix: prefix.companyPrefix,
+      appSuffix: appSuffix.suffix
     })
   );
 }
 
-export async function getPrefix(tree: Tree): Promise<string | undefined> {
+export function getPrefix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString()).prefix;
 }
 
-export async function getContexts(tree: Tree) {
+export function getContexts(tree: Tree): string[] | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   return JSON.parse(configurationFileBuffer.toString()).contexts;
+}
+
+export function getAppSuffix(tree: Tree): string | undefined {
+  const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
+  return JSON.parse(configurationFileBuffer.toString()).appSuffix;
 }

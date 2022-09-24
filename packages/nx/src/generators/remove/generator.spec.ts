@@ -16,7 +16,7 @@ jest
   .mockImplementation(() => Promise.resolve());
 jest
   .spyOn(configHelper, 'getContexts')
-  .mockImplementation(() => Promise.resolve());
+  .mockImplementation(() => []);
 
 describe('move generator', () => {
   let tree: Tree;

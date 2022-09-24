@@ -20,7 +20,7 @@ describe('Context prompt', () => {
     jest.spyOn(inquirier, 'prompt').mockReturnValue({
       selectedContext
     });
-    jest.spyOn(configHelper, 'getContexts').mockReturnValue(Promise.resolve(contexts));
+    jest.spyOn(configHelper, 'getContexts').mockReturnValue(contexts);
 
 
     expect(

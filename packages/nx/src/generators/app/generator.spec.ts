@@ -17,7 +17,7 @@ jest
   .mockImplementation(() => Promise.resolve());
 jest
   .spyOn(configHelper, 'getContexts')
-  .mockImplementation(() => Promise.resolve());
+  .mockImplementation(() => []);
 
 jest.mock('@nrwl/angular/generators', () => {
   const actualModule = jest.requireActual('@nrwl/angular/generators');
@@ -68,7 +68,8 @@ describe('app generator', () => {
 
       jest
         .spyOn(configHelper, 'getContexts')
-        .mockImplementation(() => Promise.resolve(exampleContexts));
+        .mockImplementation(() => exampleContexts);
+
       jest.spyOn(inquirer, 'prompt').mockImplementation(() =>
         Promise.resolve({
           context: 'sales',

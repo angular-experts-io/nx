@@ -6,7 +6,6 @@ import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 
 import {pascalCase} from '../utils/string';
 import generateWorkspaceApp from '../app/generator';
-import {getContexts} from '../config/config.helper';
 import * as configHelper from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
 import * as applicationPrompts from '../prompts/application.prompt';
@@ -16,10 +15,10 @@ import * as moduleBoundariesGenerator from '../module-boundaries-update/generato
 import {DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS} from '../utils/generators-angular';
 
 import generateWorkspaceLibrary from './generator';
-import exp = require("constants");
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
+const mockAppSuffix = 'app';
 
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')
@@ -27,11 +26,16 @@ jest
 
 jest
   .spyOn(configHelper, 'getContexts')
-  .mockImplementation(() => Promise.resolve(mockContexts));
+  .mockImplementation(() => mockContexts);
 
 jest
   .spyOn(configHelper, 'getPrefix')
-  .mockImplementation(() => Promise.resolve(mockPrefix));
+  .mockImplementation(() => mockPrefix);
+
+jest
+  .spyOn(configHelper, 'getAppSuffix')
+  .mockImplementation(() => mockAppSuffix);
+
 
 jest.mock('@nrwl/angular/generators', () => {
   const actualModule = jest.requireActual('@nrwl/angular/generators');
@@ -225,7 +229,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -259,7 +263,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -291,7 +295,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -325,7 +329,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -341,7 +345,7 @@ describe('library generator', () => {
       describe('App scope', () => {
         it('should generate a library of type UI', async () => {
           const prefix = 'prefix';
-          const applicationScope = 'foo';
+          const applicationScope = `foo-${mockAppSuffix}`;
           const context = 'context';
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.UI;
@@ -361,7 +365,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -380,7 +384,7 @@ describe('library generator', () => {
         it(`should export the generated component
           of a app-specific UI library from the index file`, async () => {
           const prefix = 'my-prefix';
-          const applicationScope = 'foo';
+          const applicationScope = `foo-${mockAppSuffix}`;
           const context = 'my-awesome-context';
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.UI;
@@ -399,7 +403,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -433,7 +437,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -467,7 +471,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -499,7 +503,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -533,7 +537,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -549,7 +553,7 @@ describe('library generator', () => {
       describe('App scope', () => {
         it('should generate a library of type UI', async () => {
           const prefix = 'prefix';
-          const applicationScope = 'foo';
+          const applicationScope = `foo-${mockAppSuffix}`;
           const context = 'context';
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.PATTERN;
@@ -569,7 +573,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -588,7 +592,7 @@ describe('library generator', () => {
         it(`should export the generated component
           of a app-specific UI library from the index file`, async () => {
           const prefix = 'my-prefix';
-          const applicationScope = 'foo';
+          const applicationScope = `foo-${mockAppSuffix}`;
           const context = 'my-awesome-context';
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.PATTERN;
@@ -607,7 +611,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -642,7 +646,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -686,7 +690,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -721,7 +725,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -759,7 +763,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -798,7 +802,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -825,18 +829,17 @@ describe('library generator', () => {
             name,
           };
 
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
           jest
             .spyOn(nrwlDevKit, 'installPackagesTask')
-            .mockImplementation(() => () => {
-            });
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            .mockImplementation(() => () => {});
           jest
             .spyOn(applicationPrompts, 'applicationPrompt')
             .mockReturnValue(Promise.resolve(appName));
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           (await generateWorkspaceLibrary(appTree, librarySchema))();
@@ -865,7 +868,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -909,7 +912,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -944,7 +947,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -982,7 +985,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1021,7 +1024,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1051,6 +1054,7 @@ describe('library generator', () => {
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           jest
             .spyOn(nrwlDevKit, 'installPackagesTask')
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             .mockImplementation(() => () => {
             });
           jest
@@ -1059,7 +1063,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           (await generateWorkspaceLibrary(appTree, librarySchema))();
@@ -1096,7 +1100,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1143,7 +1147,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1184,7 +1188,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1221,7 +1225,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1261,7 +1265,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1298,7 +1302,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           await generateWorkspaceLibrary(appTree, librarySchema);
@@ -1328,6 +1332,7 @@ describe('library generator', () => {
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           jest
             .spyOn(nrwlDevKit, 'installPackagesTask')
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             .mockImplementation(() => () => {
             });
           jest
@@ -1336,7 +1341,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
           (await generateWorkspaceLibrary(appTree, librarySchema))();
@@ -1372,7 +1377,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1411,7 +1416,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1448,7 +1453,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1488,7 +1493,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1526,7 +1531,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1568,7 +1573,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1604,7 +1609,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1643,7 +1648,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 
@@ -1688,7 +1693,7 @@ describe('library generator', () => {
           jest.spyOn(generatorUtils, 'angularComponentGenerator');
           jest
             .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(Promise.resolve(prefix));
+            .mockReturnValue(prefix);
 
           await generateWorkspaceLibrary(appTree, schema);
 

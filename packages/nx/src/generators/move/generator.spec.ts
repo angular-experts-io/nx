@@ -23,6 +23,7 @@ import move from './generator';
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
+const mockAppSuffix = 'app';
 
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')
@@ -30,11 +31,15 @@ jest
 
 jest
   .spyOn(configHelper, 'getContexts')
-  .mockImplementation(() => Promise.resolve(mockContexts));
+  .mockImplementation(() => mockContexts);
 
 jest
   .spyOn(configHelper, 'getPrefix')
-  .mockImplementation(() => Promise.resolve(mockPrefix));
+  .mockImplementation(() => mockPrefix);
+
+jest
+  .spyOn(configHelper, 'getAppSuffix')
+  .mockImplementation(() => mockAppSuffix);
 
 jest.spyOn(generatorUtils, 'angularComponentGenerator');
 
@@ -55,8 +60,8 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-      .spyOn(configHelper, 'getPrefix')
-      .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -110,8 +115,8 @@ describe('move generator', () => {
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
     jest
-      .spyOn(configHelper, 'getPrefix')
-      .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -168,8 +173,8 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-      .spyOn(configHelper, 'getPrefix')
-      .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -233,8 +238,8 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-      .spyOn(configHelper, 'getPrefix')
-      .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -294,8 +299,8 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-      .spyOn(configHelper, 'getPrefix')
-      .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -361,8 +366,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -431,8 +436,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -502,8 +507,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -573,8 +578,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -645,8 +650,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -722,8 +727,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -793,8 +798,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')
@@ -866,8 +871,8 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-        .spyOn(configHelper, 'getPrefix')
-        .mockReturnValue(Promise.resolve(prefix));
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
 
       jest
         .spyOn(contextPrompts, 'contextPrompt')

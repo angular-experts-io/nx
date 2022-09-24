@@ -7,6 +7,7 @@ import validateModuleBoundaries from "./generator";
 
 const mockContexts = ['foo', 'bar', 'baz'];
 const mockPrefix = 'my-awesome-prefix';
+const mockAppSuffix = 'app';
 
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')
@@ -14,11 +15,15 @@ jest
 
 jest
   .spyOn(configHelper, 'getContexts')
-  .mockImplementation(() => Promise.resolve(mockContexts));
+  .mockImplementation(() => mockContexts);
 
 jest
   .spyOn(configHelper, 'getPrefix')
-  .mockImplementation(() => Promise.resolve(mockPrefix));
+  .mockImplementation(() => mockPrefix);
+
+jest
+  .spyOn(configHelper, 'getAppSuffix')
+  .mockImplementation(() => mockAppSuffix);
 
 describe('module-boundaries-validate generator', () => {
   let appTree: Tree;
@@ -31,7 +36,6 @@ describe('module-boundaries-validate generator', () => {
     const context = 'foo';
     const name = 'my-app';
     const schema = {context, name};
-    const path = `apps/${context}/${name}`;
 
     await generateWorkspaceApp(appTree, schema);
     // TODO do we always get apps with angular.json or can it also be workspace.json?

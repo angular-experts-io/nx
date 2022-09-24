@@ -34,7 +34,6 @@ export default async function generateWorkspaceApp(
     prefix: `${prefix}-${context}`,
   });
 
-  // TODO: why is this needed ?
   await moveGenerator(tree, {
     destination: `${context}/${name}-e2e`,
     projectName: `${context}-${name}-e2e`,
@@ -67,7 +66,7 @@ async function promptMissingSchemaProperties(
           type: 'list',
           name: 'context',
           message: 'What context does your application belong to?',
-          choices: await getContexts(tree),
+          choices: getContexts(tree),
         },
       ])
     ).context;

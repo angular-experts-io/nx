@@ -11,7 +11,7 @@ export async function contextPrompt(
     type: 'list',
     name: 'selectedContext',
     message,
-    choices: await getContexts(tree),
+    choices: getContexts(tree),
   });
   return contextList.selectedContext;
 }

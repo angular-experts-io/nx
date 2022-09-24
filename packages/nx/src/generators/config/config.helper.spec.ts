@@ -14,9 +14,10 @@ describe('Config helper', () => {
     tree = createTreeWithEmptyWorkspace();
   });
 
-  it('should create a new AX file with the context and the prefix if no config file exists yet', async () => {
+  it('should create a new AX file with contexts, prefix and appSuffix if no config file exists yet', async () => {
     const expectedContexts = ['foo', 'bar', 'baz'];
     const expectedPrefix = 'my-awesome-company';
+    const expectedAppSuffix = 'app';
 
     inquirer.prompt.mockImplementation((config) => {
       if (config.name === 'availableContexts') {
@@ -30,6 +31,12 @@ describe('Config helper', () => {
           companyPrefix: expectedPrefix,
         });
       }
+
+      if (config.name === 'suffix') {
+        return Promise.resolve({
+          suffix: expectedAppSuffix,
+        });
+      }
     });
 
     await createConfigFileIfNonExisting(tree);
@@ -37,6 +44,7 @@ describe('Config helper', () => {
     const configFile = readJson(tree, CONFIG_FILE_NAME);
     expect(expectedContexts).toEqual(configFile.contexts);
     expect(expectedPrefix).toEqual(configFile.prefix);
+    expect(expectedAppSuffix).toEqual(configFile.appSuffix);
   });
 
   describe('Getters', () => {
@@ -53,7 +61,7 @@ describe('Config helper', () => {
         ),
       } as unknown as Tree;
 
-      const prefix = await getPrefix(mockTree);
+      const prefix = getPrefix(mockTree);
       expect(mockTree.read).toHaveBeenCalledWith(CONFIG_FILE_NAME);
       expect(prefix).toBe(expectedPrefix);
     });
@@ -70,7 +78,7 @@ describe('Config helper', () => {
         ),
       } as unknown as Tree;
 
-      const prefix = await getContexts(mockTree);
+      const prefix = getContexts(mockTree);
       expect(mockTree.read).toHaveBeenCalledWith(CONFIG_FILE_NAME);
       expect(prefix).toEqual(expectedContexts);
     });
@@ -87,7 +95,7 @@ describe('Config helper', () => {
         ),
       } as unknown as Tree;
 
-      const prefix = await getContexts(mockTree);
+      const prefix = getContexts(mockTree);
       expect(mockTree.read).toHaveBeenCalledWith(CONFIG_FILE_NAME);
       expect(prefix).toEqual(expectedContexts);
     });

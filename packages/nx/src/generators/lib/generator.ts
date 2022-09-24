@@ -11,7 +11,7 @@ import {camelCase, pascalCase, snakeCase} from '../utils/string';
 import {applicationPrompt} from '../prompts/application.prompt';
 
 import moduleBoundariesUpdate from '../module-boundaries-update/generator';
-import {createConfigFileIfNonExisting, getContexts, getPrefix} from "../config/config.helper";
+import {createConfigFileIfNonExisting, getAppSuffix, getContexts, getPrefix} from "../config/config.helper";
 
 import {LibGeneratorOptions} from './schema';
 
@@ -22,7 +22,7 @@ export default async function generateWorkspaceLibrary(
 ) {
   await createConfigFileIfNonExisting(tree);
   await promptMissingSchemaProperties(schema, tree);
-  validateOptions(schema);
+  validateOptions(schema, tree);
 
   const {context, scopeType, scopeAppSpecific, type, name} = schema;
   /*
@@ -30,7 +30,7 @@ export default async function generateWorkspaceLibrary(
     - Let user reenter it again
     - Create libs without prefix
    */
-  const prefix = await getPrefix(tree);
+  const prefix = getPrefix(tree);
   const selectedGenerator = [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
     type
   )
@@ -46,6 +46,7 @@ export default async function generateWorkspaceLibrary(
     scopeType === ScopeType.APP_SPECIFIC && type === LibraryType.FEATURE;
 
   // create schema
+  // eslint-disable-next-line
   const enrichedSchema: any = {
     // standard
     strict: true,
@@ -218,7 +219,7 @@ async function promptMissingSchemaProperties(
           type: 'list',
           name: 'context',
           message: 'What context does your library belong to?',
-          choices: await getContexts(tree),
+          choices: getContexts(tree),
         },
       ])
     ).context;
@@ -264,7 +265,7 @@ async function promptMissingSchemaProperties(
   }
 }
 
-function validateOptions(options: LibGeneratorOptions) {
+function validateOptions(options: LibGeneratorOptions, tree: Tree) {
   const {scopeType, scopeAppSpecific, name} = options;
   if (name.includes(' ')) {
     throw new Error(
@@ -272,17 +273,15 @@ function validateOptions(options: LibGeneratorOptions) {
     );
   }
 
-  // TODO: do we want to enforce an ending for app specific libraries?
-  /*
+  const appSuffix = getAppSuffix(tree);
   if (
     scopeType === ScopeType.APP_SPECIFIC &&
-    !scopeAppSpecific.endsWith('-rwc')
+    !scopeAppSpecific.endsWith(appSuffix)
   ) {
     throw new Error(
-      `The app specific scope "${scopeAppSpecific}" must end with "-rwc"`
+      `The app specific scope "${scopeAppSpecific}" must end with "${appSuffix}".`
     );
   }
-   */
 }
 
 function prefixStateSlice(
