@@ -61,9 +61,9 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   tree.write(
     CONFIG_FILE_NAME,
     JSON.stringify({
-      contexts: contexts.availableContexts.split(','),
-      prefix: prefix.companyPrefix,
-      appSuffix: appSuffix.suffix
+      contexts: contexts ? contexts.availableContexts.split(','): DEFAULT_CONFIG_OPTIONS.contexts,
+      prefix: prefix.companyPrefix || DEFAULT_CONFIG_OPTIONS.prefix,
+      appSuffix: appSuffix.suffix || DEFAULT_CONFIG_OPTIONS.appSuffix
     })
   );
 }
