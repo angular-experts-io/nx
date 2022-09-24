@@ -24,11 +24,6 @@ export default async function generateWorkspaceLibrary(
   validateOptions(schema, tree);
 
   const {context, scopeType, scopeAppSpecific, type, name} = schema;
-  /*
-   TODO how do we want to handle cases where the prefix was deleted in AX config.
-    - Let user reenter it again
-    - Create libs without prefix
-   */
   const prefix = getPrefix(tree);
   const selectedGenerator = [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
     type
