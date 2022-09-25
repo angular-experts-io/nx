@@ -38,7 +38,6 @@ describe('module-boundaries-validate generator', () => {
     const schema = {context, name};
 
     await generateWorkspaceApp(appTree, schema);
-    // TODO do we always get apps with angular.json or can it also be workspace.json?
     appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
 
     await expect(
@@ -55,7 +54,6 @@ describe('module-boundaries-validate generator', () => {
     const wrongTags = ['type:app'];
 
     await generateWorkspaceApp(appTree, schema);
-    // TODO do we always get apps with angular.json or can it also be workspace.json?
     appTree.write('angular.json', JSON.stringify(readJson(appTree, 'workspace.json')));
 
     updateJson(appTree, `${path}/project.json`, projectJson => {

@@ -198,7 +198,7 @@ describe('library generator', () => {
         scopeType: ScopeType.SHARED,
         type: LibraryType.UI,
         name: appName,
-        prefix: 'prefix', // TODO: cleanup all the prefixes
+        prefix: 'prefix'
       };
       await expect(
         async () => await generateWorkspaceLibrary(appTree, schema)

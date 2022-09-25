@@ -89,7 +89,6 @@ describe('move generator', () => {
 
     await generateWorkspaceApp(tree, {context, name: appName});
 
-    // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
     tree.write(
       './angular.json',
       JSON.stringify({
@@ -144,7 +143,6 @@ describe('move generator', () => {
 
     await generateWorkspaceApp(tree, {context, name: appName});
 
-    // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
     tree.write(
       './angular.json',
       JSON.stringify({
@@ -167,7 +165,6 @@ describe('move generator', () => {
     const appName = 'test-app';
     const newAppName = 'new-test-app';
 
-    // TODO check if this mock can be done at the beginning
     jest
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
@@ -204,7 +201,6 @@ describe('move generator', () => {
 
     await generateWorkspaceApp(tree, {context, name: appName});
 
-    // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
     tree.write(
       './angular.json',
       JSON.stringify({
@@ -232,7 +228,6 @@ describe('move generator', () => {
     const appName = 'test-app';
     const newAppName = 'new-test-app';
 
-    // TODO check if this mock can be done at the beginning
     jest
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
@@ -271,7 +266,6 @@ describe('move generator', () => {
 
     await generateWorkspaceApp(tree, {context, name: appName});
 
-    // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
     tree.write(
       './angular.json',
       JSON.stringify({
@@ -293,7 +287,6 @@ describe('move generator', () => {
     const appName = 'test-app';
     const newAppName = 'new-test-app';
 
-    // TODO check if this mock can be done at the beginning
     jest
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
@@ -334,7 +327,6 @@ describe('move generator', () => {
 
     await generateWorkspaceApp(tree, {context, name: appName});
 
-    // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
     tree.write(
       './angular.json',
       JSON.stringify({
@@ -360,7 +352,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -406,7 +397,6 @@ describe('move generator', () => {
         type,
       });
 
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -430,7 +420,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -476,8 +465,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -501,7 +488,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -547,8 +533,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -572,7 +556,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -618,8 +601,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -644,7 +625,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -690,8 +670,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -721,7 +699,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -767,8 +744,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -792,7 +767,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -840,8 +814,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
@@ -865,7 +837,6 @@ describe('move generator', () => {
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
 
-      // TODO check if this mock can be done at the beginning
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
         .mockReturnValue(Promise.resolve(appName));
@@ -915,8 +886,6 @@ describe('move generator', () => {
         type,
       });
 
-
-      // TODO: this is a workaround - cna we asume that we always have an Angular.json? or is it a workspace.json?
       tree.write(
         './angular.json',
         JSON.stringify({
