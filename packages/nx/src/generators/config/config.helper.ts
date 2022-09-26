@@ -22,6 +22,10 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
     ? JSON.parse(configurationFileBuffer.toString())
     : null;
 
+  if(configFile?.contexts?.length > 0 && configFile.prefix && configFile.appSuffix) {
+    return;
+  }
+
   if (!configFile) {
     console.log(
       `No configuraiton file found. Don't worry, we will create one for you.`
@@ -61,7 +65,7 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
   tree.write(
     CONFIG_FILE_NAME,
     JSON.stringify({
-      contexts: contexts ? contexts.availableContexts.split(',') : DEFAULT_CONFIG_OPTIONS.contexts,
+    contexts: contexts.availableContexts ? contexts.availableContexts.split(',') : DEFAULT_CONFIG_OPTIONS.contexts,
       prefix: prefix.companyPrefix || DEFAULT_CONFIG_OPTIONS.prefix,
       appSuffix: appSuffix.suffix || DEFAULT_CONFIG_OPTIONS.appSuffix
     })
@@ -71,7 +75,7 @@ export async function createConfigFileIfNonExisting(tree: Tree): Promise<void> {
 export function getPrefix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   const prefixFromConfigFile = JSON.parse(configurationFileBuffer.toString()).prefix;
-  if (prefixFromConfigFile) {
+  if (!prefixFromConfigFile) {
     printWarningMessageForMissingConfigProperty('prefix', DEFAULT_CONFIG_OPTIONS.prefix);
   }
   return prefixFromConfigFile || DEFAULT_CONFIG_OPTIONS.prefix;
@@ -80,7 +84,7 @@ export function getPrefix(tree: Tree): string | undefined {
 export function getContexts(tree: Tree): string[] | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   const contextFromConfigFile = JSON.parse(configurationFileBuffer.toString()).contexts;
-  if (contextFromConfigFile) {
+  if (!contextFromConfigFile) {
     printWarningMessageForMissingConfigProperty('contexts', `[${DEFAULT_CONFIG_OPTIONS.contexts.join(', ')}]`);
   }
   return contextFromConfigFile || DEFAULT_CONFIG_OPTIONS.contexts;
@@ -89,7 +93,7 @@ export function getContexts(tree: Tree): string[] | undefined {
 export function getAppSuffix(tree: Tree): string | undefined {
   const configurationFileBuffer = tree.read(CONFIG_FILE_NAME);
   const appSuffixFromConfigFile = JSON.parse(configurationFileBuffer.toString()).appSuffix;
-  if (appSuffixFromConfigFile) {
+  if (!appSuffixFromConfigFile) {
     printWarningMessageForMissingConfigProperty('appSuffix', DEFAULT_CONFIG_OPTIONS.appSuffix);
   }
   return appSuffixFromConfigFile || DEFAULT_CONFIG_OPTIONS.appSuffix;
