@@ -25,9 +25,6 @@ export default async function generateWorkspaceLibrary(
 
   const {context, scopeType, scopeAppSpecific, type, name} = schema;
   const prefix = getPrefix(tree);
-  console.log('El value', [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
-    type
-  ));
   const selectedGenerator = [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
     type
   )
@@ -272,7 +269,7 @@ function validateOptions(options: LibGeneratorOptions, tree: Tree) {
   const appSuffix = getAppSuffix(tree);
   if (
     scopeType === ScopeType.APP_SPECIFIC &&
-    !scopeAppSpecific.endsWith(appSuffix)
+    !scopeAppSpecific?.endsWith(appSuffix)
   ) {
     throw new Error(
       `The app specific scope "${scopeAppSpecific}" must end with "${appSuffix}".`

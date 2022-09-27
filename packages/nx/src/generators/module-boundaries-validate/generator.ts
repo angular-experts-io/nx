@@ -70,7 +70,7 @@ async function validateProjectTagsMatchProjectLocation(
   const expectedTags = [`context:${context}`];
 
   if (appsOrLibs === 'apps') {
-    expectedTags.push(`type:${scopeOrName.endsWith('-e2e') ? 'e2e' : 'app'}`);
+    expectedTags.push(`type:${scopeOrName?.endsWith('-e2e') ? 'e2e' : 'app'}`);
   } else {
     expectedTags.push(`scope:${scopeOrName}`);
     expectedTags.push(`type:${type}`);
@@ -135,11 +135,11 @@ Folder structure:       ${contextDirs.join(', ')}
 Difference:             ${chalk.inverse(contextDiff.join(', '))}`);
   }
   const scopeApps = getFoldersFromTheeForDepth(tree, './apps', 1)
-    .filter((item) => !item.endsWith('-e2e'));
+    .filter((item) => !item?.endsWith('-e2e'));
   const scopeLibs = getFoldersFromTheeForDepth(tree, './libs', 1);
   const scopeDirs = Array.from(new Set([...scopeApps, ...scopeLibs]))
     .filter(
-      (scope) => scope.endsWith(getAppSuffix(tree))
+      (scope) => scope?.endsWith(getAppSuffix(tree))
     );
   const scopeDiff = diff(scopes, scopeDirs);
   if (JSON.stringify(scopeDirs.sort()) !== JSON.stringify(scopes.sort())) {
