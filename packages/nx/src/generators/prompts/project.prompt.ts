@@ -22,6 +22,7 @@ export async function projectPrompt(tree: Tree): Promise<string> {
       name: 'selectedProject',
       message: 'Choose a project',
       source: (answersSoFar, input) =>
+        /* istanbul ignore next */
         Promise.resolve().then(() => {
           if (!input) {
             return filteredProjects;
