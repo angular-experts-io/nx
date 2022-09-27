@@ -96,6 +96,7 @@ export default async function move(tree: Tree, schema: MoveSchema) {
     await updateJson(
       tree,
       `libs/${destination}/ng-package.json`,
+      /* istanbul ignore next */
       (projectJson) => {
         projectJson.dest = `../../../../../dist/libs/${destination}`;
         return projectJson;

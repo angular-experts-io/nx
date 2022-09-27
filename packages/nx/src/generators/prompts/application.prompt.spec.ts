@@ -4,6 +4,7 @@ import * as inquirier from "inquirer";
 import {Tree} from "@nrwl/devkit";
 
 import {applicationPrompt} from "./application.prompt";
+import * as contextPrompts from "./context.prompt";
 
 describe('ApplicationPrompt', () => {
 
@@ -11,6 +12,25 @@ describe('ApplicationPrompt', () => {
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace(2);
+  });
+
+  it('should call the context prompt if no context is provided', async () => {
+    jest.spyOn(contextPrompts, 'contextPrompt').mockImplementation(() => Promise.resolve('bar'));
+    const projects = new Map();
+    projects.set('bar-test', {projectType: 'application'});
+    projects.set('bar-test-e2e', {projectType: 'application'});
+    projects.set('baz-test', {projectType: 'application'});
+    projects.set('baz-test-e2e', {projectType: 'application'});
+
+    jest.spyOn(nrwlDevkit, 'getProjects').mockReturnValue(projects);
+
+    jest.spyOn(inquirier, 'prompt').mockReturnValue({
+      selectedApplication: 'bar'
+    });
+
+    await applicationPrompt(tree);
+
+    expect(contextPrompts.contextPrompt).toHaveBeenCalled();
   });
 
   it('should return an empty list if no apps are found under the specified context', async () => {

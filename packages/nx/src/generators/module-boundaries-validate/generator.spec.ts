@@ -34,7 +34,7 @@ describe('module-boundaries-validate generator', () => {
 
   it('should not throw an error the project tags are correct', async () => {
     const context = 'foo';
-    const name = 'my-app';
+    const name = 'hero-caller';
     const schema = {context, name};
 
     await generateWorkspaceApp(appTree, schema);
@@ -48,7 +48,7 @@ describe('module-boundaries-validate generator', () => {
 
   it('should throw an error if the context is missing in the project tags', async () => {
     const context = 'foo';
-    const name = 'my-app';
+    const name = 'hero-caller';
     const path = `apps/${context}/${name}-${mockAppSuffix}`;
     const schema = {context, name};
     const wrongTags = ['type:app'];

@@ -14,6 +14,17 @@ describe('Config helper', () => {
     tree = createTreeWithEmptyWorkspace();
   });
 
+  it('should not call inquirer if contexts, prefix and appSuffix are provided', async () => {
+    const contexts = ['foo', 'bar'];
+    const prefix = 'my-prefix';
+    const appSuffix = 'app';
+
+    tree.write(CONFIG_FILE_NAME, JSON.stringify({contexts, prefix, appSuffix}));
+
+    await createConfigFileIfNonExisting(tree);
+    expect(inquirer.prompt).not.toHaveBeenCalled();
+  });
+
   it('should create a new AX file with default values if no values are provided', async () => {
     inquirer.prompt.mockImplementation(() => Promise.resolve({}));
 

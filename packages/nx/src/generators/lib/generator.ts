@@ -25,6 +25,9 @@ export default async function generateWorkspaceLibrary(
 
   const {context, scopeType, scopeAppSpecific, type, name} = schema;
   const prefix = getPrefix(tree);
+  console.log('El value', [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
+    type
+  ));
   const selectedGenerator = [LibraryType.MODEL, LibraryType.UTIL_FN].includes(
     type
   )

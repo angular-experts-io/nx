@@ -4,10 +4,10 @@ import {readJson, Tree} from '@nrwl/devkit';
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
 
-import {pascalCase} from '../utils/string';
 import generateWorkspaceApp from '../app/generator';
 import * as configHelper from '../config/config.helper';
 import * as generatorUtils from '../utils/generators-angular';
+import {camelCase, capitalize, pascalCase} from '../utils/string';
 import * as applicationPrompts from '../prompts/application.prompt';
 import {getAvailableScopeTypes, ScopeType} from '../model/scope-type';
 import {AVAILABLE_LIBRARY_TYPES, LibraryType} from '../model/library-type';
@@ -206,6 +206,25 @@ describe('library generator', () => {
         async () => await generateWorkspaceLibrary(appTree, schema)
       ).rejects.toThrow(
         `The lib name "${appName}" should not contain spaces. Please use "-" instead.`
+      );
+    });
+
+    it('should trow an error if the app specific scope doesnt end with the appSuffix', async () => {
+      const appName = 'hero-caller';
+      const appSuffix = 'app';
+      const scopeAppSpecific = appName;
+      const schema = {
+        context: 'context',
+        scopeType: ScopeType.APP_SPECIFIC,
+        scopeAppSpecific,
+        type: LibraryType.UI,
+        name: appName,
+        prefix: 'prefix'
+      };
+      await expect(
+        async () => await generateWorkspaceLibrary(appTree, schema)
+      ).rejects.toThrow(
+        `The app specific scope "${scopeAppSpecific}" must end with "${appSuffix}".`
       );
     });
   });
@@ -421,7 +440,7 @@ describe('library generator', () => {
 
     describe('Library type Pattern', () => {
       describe('Shared scope', () => {
-        it('should generate a library of type UI', async () => {
+        it('should generate a library of type Pattern', async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
           const scopeType = ScopeType.SHARED;
@@ -487,7 +506,7 @@ describe('library generator', () => {
       });
 
       describe('Public scope', () => {
-        it('should generate a library of type UI', async () => {
+        it('should generate a library of type Pattern', async () => {
           const prefix = 'my-prefix';
           const context = 'my-awesome-context';
           const scopeType = ScopeType.PUBLIC;
@@ -553,7 +572,7 @@ describe('library generator', () => {
       });
 
       describe('App scope', () => {
-        it('should generate a library of type UI', async () => {
+        it('should generate a library of type Pattern', async () => {
           const prefix = 'prefix';
           const applicationScope = `foo-${mockAppSuffix}`;
           const context = 'context';
@@ -669,7 +688,7 @@ describe('library generator', () => {
         it('should adjust the package JSON', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.SHARED;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -705,7 +724,7 @@ describe('library generator', () => {
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.SHARED;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -744,7 +763,7 @@ describe('library generator', () => {
         it('should call the moduleBoundaries updates', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.SHARED;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -781,7 +800,7 @@ describe('library generator', () => {
         it('should format the files', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.SHARED;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -815,7 +834,7 @@ describe('library generator', () => {
         it('should return a function that allows to call installPackagesTask', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.SHARED;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -834,7 +853,8 @@ describe('library generator', () => {
           jest
             .spyOn(nrwlDevKit, 'installPackagesTask')
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            .mockImplementation(() => () => {});
+            .mockImplementation(() => () => {
+            });
           jest
             .spyOn(applicationPrompts, 'applicationPrompt')
             .mockReturnValue(Promise.resolve(appName));
@@ -891,7 +911,7 @@ describe('library generator', () => {
         it('should adjust the package JSON', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.PUBLIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -927,7 +947,7 @@ describe('library generator', () => {
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.PUBLIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -966,7 +986,7 @@ describe('library generator', () => {
         it('should call the moduleBoundaries updates', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.PUBLIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1003,7 +1023,7 @@ describe('library generator', () => {
         it('should format the files', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.PUBLIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1037,7 +1057,7 @@ describe('library generator', () => {
         it('should return a function that allows to call installPackagesTask', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.PUBLIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1115,21 +1135,21 @@ describe('library generator', () => {
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining(
-            {
-              ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
-              project,
-              name: `${librarySchema.name}-container`,
-              module: moduleName,
-              export: false,
-              selector,
-            })
+              {
+                ...DEFAULT_ANGULAR_GENERATOR_COMPONENT_OPTIONS,
+                project,
+                name: `${librarySchema.name}-container`,
+                module: moduleName,
+                export: false,
+                selector,
+              })
           );
         });
 
         it('should add a route configuration for our freshly generated component', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scope = 'foo';
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.FEATURE;
@@ -1170,7 +1190,7 @@ describe('library generator', () => {
         it('should adjust the package JSON', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1208,7 +1228,7 @@ describe('library generator', () => {
         it('should adjust the tsconfig', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1249,7 +1269,7 @@ describe('library generator', () => {
         it('should call the moduleBoundaries updates', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1286,7 +1306,7 @@ describe('library generator', () => {
         it('should format the files', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1320,7 +1340,7 @@ describe('library generator', () => {
         it('should return a function that allows to call installPackagesTask', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
@@ -1366,7 +1386,7 @@ describe('library generator', () => {
           const context = 'my-awesome-context';
           const scopeType = ScopeType.SHARED;
           const type = LibraryType.DATA_ACCESS;
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeType}/${type}/${name}`;
           const moduleName = `${context}-${scopeType}-${type}-${name}.module`;
 
@@ -1406,7 +1426,7 @@ describe('library generator', () => {
           const context = 'my-awesome-context';
           const scopeType = ScopeType.SHARED;
           const type = LibraryType.DATA_ACCESS;
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeType}/${type}/${name}`;
           const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
           const schema = {
@@ -1442,7 +1462,7 @@ describe('library generator', () => {
           const context = 'my-awesome-context';
           const scopeType = ScopeType.PUBLIC;
           const type = LibraryType.DATA_ACCESS;
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeType}/${type}/${name}`;
           const moduleName = `${context}-${scopeType}-${type}-${name}.module`;
 
@@ -1483,7 +1503,7 @@ describe('library generator', () => {
           const context = 'my-awesome-context';
           const scopeType = ScopeType.PUBLIC;
           const type = LibraryType.DATA_ACCESS;
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeType}/${type}/${name}`;
           const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
           const schema = {
@@ -1520,7 +1540,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.DATA_ACCESS;
           const scopeAppSpecific = 'my-awesome-app';
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
           const moduleName = `${context}-${scopeAppSpecific}-${type}-${name}.module`;
           const schema = {
@@ -1562,7 +1582,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.DATA_ACCESS;
           const scopeAppSpecific = 'my-awesome-app';
-          const name = 'my-awesome-app';
+          const name = 'my-awesome';
           const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
           const reducerFilePath = `./libs/${libpath}/src/lib/+state/${name}.reducer.ts`;
           const schema = {
@@ -1713,6 +1733,215 @@ describe('library generator', () => {
           );
           expect(indexFileContent).toContain(
             `export * from './lib/${modelFileName}';`
+          );
+        });
+      });
+    });
+
+    describe('Library type util function', () => {
+      describe('Scope shared', () => {
+        it('should generate a library of type UTIL_FN', async () => {
+          const context = 'context';
+          const scopeType = ScopeType.SHARED;
+          const type = LibraryType.UTIL_FN;
+          const name = 'test';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const filePath = `libs/${libpath}/src/lib/${context}-${scopeType}-${type}-${name}.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const fileContent = appTree.read(filePath).toString();
+
+          const expectedFunctionName = `${context}${capitalize(scopeType)}${capitalize(camelCase(type))}${capitalize(name)}`;
+          const expectedReturnValue = `${context}-${scopeType}-${type}-${name}`;
+
+          expect(fileContent).toEqual(
+            `export function ${expectedFunctionName}(): string {
+    return '${expectedReturnValue}';
+}
+`
+          );
+        });
+      });
+
+      describe('Scope public', () => {
+        it('should generate a library of type UTIL_FN', async () => {
+          const context = 'context';
+          const scopeType = ScopeType.PUBLIC;
+          const type = LibraryType.UTIL_FN;
+          const name = 'test';
+          const libpath = `${context}/${scopeType}/${type}/${name}`;
+          const filePath = `libs/${libpath}/src/lib/${context}-${scopeType}-${type}-${name}.ts`;
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const fileContent = appTree.read(filePath).toString();
+
+          const expectedFunctionName = `${context}${capitalize(scopeType)}${capitalize(camelCase(type))}${capitalize(name)}`;
+          const expectedReturnValue = `${context}-${scopeType}-${type}-${name}`;
+
+          expect(fileContent).toEqual(
+            `export function ${expectedFunctionName}(): string {
+    return '${expectedReturnValue}';
+}
+`
+          );
+        });
+      });
+
+      describe('Scope app specific', () => {
+        it('should generate a library of type UTIL_FN', async () => {
+          const context = 'context';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const scopeAppSpecific = 'my-awesome-app';
+          const type = LibraryType.UTIL_FN;
+          const name = 'test';
+          const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
+          const filePath = `libs/${libpath}/src/lib/${context}-${scopeAppSpecific}-${type}-${name}.ts`;
+          const applicationScope = 'foo';
+          const schema = {
+            context,
+            scopeType,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(applicationScope));
+          jest.spyOn(generatorUtils, 'angularComponentGenerator');
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          const fileContent = appTree.read(filePath).toString();
+
+          const expectedFunctionName = `${context}${capitalize(camelCase(scopeAppSpecific))}${capitalize(camelCase(type))}${capitalize(name)}`;
+          const expectedReturnValue = `${context}-${scopeAppSpecific}-${type}-${name}`;
+
+          expect(fileContent).toEqual(
+            `export function ${expectedFunctionName}(): string {
+    return '${expectedReturnValue}';
+}
+`
+          );
+        });
+      });
+    });
+
+    describe('Library type Util', () => {
+      describe('Shared scope', () => {
+        it('should generate a library of type Util', async () => {
+          const prefix = 'my-prefix';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.SHARED;
+          const type = LibraryType.UTIL;
+          const name = 'my-awesome-app';
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'libraryGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          expect(nrwlAngularGenerators.libraryGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining(
+              {
+                skipModule: true,
+                prefix: `${prefix}-${context}`,
+                name: `${context}/${scopeType}/${type}/${name}`
+              })
+          );
+        });
+      });
+
+      describe('Public scope', () => {
+        it('should generate a library of type Util', async () => {
+          const prefix = 'my-prefix';
+          const context = 'my-awesome-context';
+          const scopeType = ScopeType.PUBLIC;
+          const type = LibraryType.UTIL;
+          const name = 'my-awesome-app';
+          const schema = {
+            context,
+            scopeType,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'libraryGenerator');
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          expect(nrwlAngularGenerators.libraryGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining(
+              {
+                skipModule: true,
+                prefix: `${prefix}-${context}`,
+                name: `${context}/${scopeType}/${type}/${name}`
+              })
+          );
+        });
+      });
+
+      describe('App scope', () => {
+        it('should generate a library of type Util', async () => {
+          const prefix = 'my-prefix';
+          const context = 'my-awesome-context';
+          const scopeAppSpecific = 'my-awesome-app';
+          const scopeType = ScopeType.APP_SPECIFIC;
+          const type = LibraryType.UTIL;
+          const name = 'my-awesome-app';
+          const schema = {
+            context,
+            scopeType,
+            scopeAppSpecific,
+            type,
+            name,
+          };
+
+          jest.spyOn(nrwlAngularGenerators, 'libraryGenerator');
+          jest
+            .spyOn(applicationPrompts, 'applicationPrompt')
+            .mockReturnValue(Promise.resolve(context));
+          jest
+            .spyOn(configHelper, 'getPrefix')
+            .mockReturnValue(prefix);
+
+          await generateWorkspaceLibrary(appTree, schema);
+
+          expect(nrwlAngularGenerators.libraryGenerator).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining(
+              {
+                skipModule: true,
+                prefix: `${prefix}-${context}`,
+                name: `${context}/${scopeAppSpecific}/${type}/${name}`
+              })
           );
         });
       });

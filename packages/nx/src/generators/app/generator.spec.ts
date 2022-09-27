@@ -1,5 +1,5 @@
 import {createTreeWithEmptyWorkspace} from '@nrwl/devkit/testing';
-import {Tree, readJson} from '@nrwl/devkit';
+import {Tree, readJson, updateJson} from '@nrwl/devkit';
 
 import * as nrwlAngularGenerators from '@nrwl/angular/generators';
 import * as nrwlWorkspaceGenerators from '@nrwl/workspace/generators';
@@ -25,7 +25,7 @@ jest
 
 jest
   .spyOn(configHelper, 'getPrefix')
-  .mockImplementation(() =>mockPrefix);
+  .mockImplementation(() => mockPrefix);
 
 jest
   .spyOn(configHelper, 'getAppSuffix')
@@ -48,7 +48,8 @@ jest.mock('@nrwl/workspace/generators', () => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => {
+});
 
 describe('app generator', () => {
   let appTree: Tree;
@@ -120,7 +121,7 @@ describe('app generator', () => {
     });
   });
 
-  describe('Name', () => {
+  describe('Validate name', () => {
 
     it('should ensure that a name does not contain spaces', async () => {
       const appName = 'my awesome app';
@@ -143,6 +144,18 @@ describe('app generator', () => {
       };
       await expect(async () => await generateWorkspaceApp(appTree, schema)).rejects.toThrow(
         `The app name "${appName}" should not end with "-"`
+      );
+    });
+
+    it('should ensure that the name does not end with the appSuffix since its appended automatically', async () => {
+      const appName = `my-awesome-${mockAppSuffix}`;
+      const schema = {
+        context: 'context',
+        name: appName,
+        prefix: 'prefix',
+      };
+      await expect(async () => await generateWorkspaceApp(appTree, schema)).rejects.toThrow(
+        `The app name "${appName}" should not end with "${mockAppSuffix}" as that will be appended automatically.`
       );
     });
   });
@@ -201,7 +214,7 @@ describe('app generator', () => {
 
     it('should update the project tags', async () => {
       const context = 'my-context';
-      const name = 'my-awesome-app';
+      const name = 'my-awesome';
       const schema = {
         context,
         name
@@ -215,8 +228,9 @@ describe('app generator', () => {
   });
 
   describe('Update package.json scripts', () => {
+
     it('should add serve script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
 
@@ -233,7 +247,7 @@ describe('app generator', () => {
     });
 
     it('should add build script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
       const schema = {
@@ -249,7 +263,7 @@ describe('app generator', () => {
     });
 
     it('should add an analyze script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
       const schema = {
@@ -265,7 +279,7 @@ describe('app generator', () => {
     });
 
     it('should add a lint script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
       const schema = {
@@ -281,7 +295,7 @@ describe('app generator', () => {
     });
 
     it('should add a test script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
       const schema = {
@@ -297,7 +311,7 @@ describe('app generator', () => {
     });
 
     it('should add a e2e script', async () => {
-      const name = 'awesome-app';
+      const name = 'awesome';
       const context = 'awesome-context';
       const projectName = `${context}-${name}`;
       const schema = {
@@ -316,7 +330,7 @@ describe('app generator', () => {
   describe('Module boundaries', () => {
     it('should call updateModuleBoundaries with the correct params', async () => {
       const context = 'my-awesome-context';
-      const name = 'my-awesome-app';
+      const name = 'my-awesome';
       const schema = {
         context,
         name
@@ -403,7 +417,8 @@ describe('app generator', () => {
         prefix: 'my-awesome-prefix'
       }
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {});
+      jest.spyOn(nrwlDevKit, 'installPackagesTask').mockImplementation(() => () => {
+      });
 
       (await generateWorkspaceApp(appTree, schema))();
 

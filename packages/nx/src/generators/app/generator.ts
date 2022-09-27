@@ -105,7 +105,7 @@ function validateName(tree: Tree, name: string, appSuffix: string): void {
     );
   }
 
-  if (name.endsWith('-rwc')) {
+  if (name.endsWith(`-${appSuffix}`)) {
     throw new Error(
       `The app name "${name}" should not end with "${appSuffix}" as that will be appended automatically.`
     );
@@ -178,9 +178,6 @@ export async function updatePackageJSONScripts(
 ): Promise<void> {
   const projectName = `${context}-${name}`;
   await updateJson(tree, `package.json`, (packageJson) => {
-    if (!packageJson.scripts) {
-      packageJson.scripts = {};
-    }
     packageJson.scripts[
       `serve:${projectName}:app`
       ] = `nx serve --project ${projectName} -o`;

@@ -33,6 +33,7 @@ export async function applicationPrompt(
       message: 'Choose a application',
       source: (answersSoFar, input) =>
         Promise.resolve().then(() => {
+          /* istanbul ignore next */
           if (!input) {
             return filteredApplications;
           } else {

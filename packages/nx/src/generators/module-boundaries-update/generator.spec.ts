@@ -33,7 +33,7 @@ describe('module-boundaries-update', () => {
 
   it('should add new context', async () => {
     const context = 'foo';
-    const appName = 'my-app';
+    const appName = 'visualizer';
     const schema = {
       context
     };
@@ -60,7 +60,7 @@ describe('module-boundaries-update', () => {
   it('should add new scope', async () => {
     const context = 'foo';
     const scope = 'brand-new-scope';
-    const appName = 'my-app';
+    const appName = 'visualizer';
     const schema = {
       scope
     };
