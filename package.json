@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "commit": "git-cz",
     "start": "nx serve",
     "build": "nx run nx:build",
     "test": "nx run nx:test",
@@ -31,6 +32,7 @@
     "@typescript-eslint/parser": "~5.18.0",
     "eslint": "~8.12.0",
     "eslint-config-prettier": "8.1.0",
+    "git-cz": "^4.9.0",
     "jest": "27.5.1",
     "nx": "14.1.7",
     "prettier": "^2.5.1",
