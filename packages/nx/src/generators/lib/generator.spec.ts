@@ -167,8 +167,9 @@ describe('library generator', () => {
 
     it(`should call the application prompts for app specific scopeType
       and missing app specific scope`, async () => {
-      const appName = 'my-awesome-app';
+      const appName = 'my-awesome';
       const context = 'my-awesome-context';
+
       const librarySchema = {
         context,
         scopeType: ScopeType.APP_SPECIFIC,
@@ -179,10 +180,11 @@ describe('library generator', () => {
 
       jest
         .spyOn(applicationPrompts, 'applicationPrompt')
-        .mockReturnValue(Promise.resolve(appName));
+        .mockReturnValue(Promise.resolve(`${appName}-${mockAppSuffix}`));
 
       await generateWorkspaceApp(appTree, {name: appName, context});
       await generateWorkspaceLibrary(appTree, librarySchema);
+
       expect(applicationPrompts.applicationPrompt).toHaveBeenCalledWith(
         expect.anything(),
         context
@@ -1076,11 +1078,11 @@ describe('library generator', () => {
         it('should generate a library of type feature', async () => {
           const prefix = 'prefix';
           const context = 'domain-a';
-          const appName = 'test-app';
+          const appName = 'test';
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
           const project = `${context}-${scopeAppSpecific}-${type}-${name}`;
           const selector = `${prefix}-${context}-${scopeAppSpecific}-${name}`;
@@ -1103,6 +1105,11 @@ describe('library generator', () => {
             .mockReturnValue(prefix);
 
           await generateWorkspaceApp(appTree, {context, name: appName});
+
+          appTree.listChanges().forEach((change) => {
+            console.log(change.path);
+          });
+
           await generateWorkspaceLibrary(appTree, librarySchema);
 
           expect(generatorUtils.angularComponentGenerator).toHaveBeenCalledWith(
@@ -1127,7 +1134,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const type = LibraryType.FEATURE;
           const name = 'my-lib';
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const moduleName = `${context}-${scopeAppSpecific}-${type}-${name}.module`;
           const path = `${context}/${scopeAppSpecific}/${type}/${name}`;
           const modulePath = `libs/${path}/src/lib/${moduleName}.ts`;
@@ -1167,7 +1174,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
           const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
           const packageJSONPath = `libs/${libpath}/package.json`;
@@ -1205,7 +1212,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
           const libpath = `${context}/${scopeAppSpecific}/${type}/${name}`;
           const packageName = `${prefix}/${libpath.replace(/\//g, '-')}`;
@@ -1246,7 +1253,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
 
           const librarySchema = {
@@ -1283,7 +1290,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
 
           const librarySchema = {
@@ -1317,7 +1324,7 @@ describe('library generator', () => {
           const scopeType = ScopeType.APP_SPECIFIC;
           const scope = 'foo';
           const type = LibraryType.FEATURE;
-          const scopeAppSpecific = appName;
+          const scopeAppSpecific = `${appName}-${mockAppSuffix}`;
           const name = 'my-lib';
 
           const librarySchema = {

@@ -83,6 +83,8 @@ export default async function move(tree: Tree, schema: MoveSchema) {
     destination += name;
   }
 
+  // TODO should we ensure that the destination has the correct appSuffix?
+
   await moveGenerator(tree, {
     projectName,
     destination,

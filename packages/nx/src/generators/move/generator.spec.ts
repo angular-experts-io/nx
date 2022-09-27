@@ -51,17 +51,12 @@ describe('move generator', () => {
   });
 
   it('should call the project prompt if no projectName was provided', async () => {
-    const prefix = 'prefix';
     const context = 'domain-a';
-    const appName = 'test-app';
+    const appName = 'test';
 
     jest
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
-
-    jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -69,7 +64,7 @@ describe('move generator', () => {
 
     jest
       .spyOn(projectPrompts, 'projectPrompt')
-      .mockImplementation(() => Promise.resolve(`${context}-${appName}`));
+      .mockImplementation(() => Promise.resolve(`${context}-${appName}-${mockAppSuffix}`));
 
     jest
       .spyOn(scopePrompts, 'default')
@@ -95,7 +90,7 @@ describe('move generator', () => {
         $schema: './node_modules/nx/schemas/workspace-schema.json',
         version: 2,
         projects: {
-          [`${context}-${appName}`]: `apps/${context}/${appName}`,
+          [`${context}-${appName}-${mockAppSuffix}`]: `apps/${context}/${appName}-${mockAppSuffix}`,
         },
       })
     );
@@ -106,16 +101,12 @@ describe('move generator', () => {
   });
 
   it('should ask for the target context if no destination was provided', async () => {
-    const prefix = 'prefix';
     const context = 'domain-a';
-    const appName = 'test-app';
+    const appName = 'test';
 
     jest
       .spyOn(applicationPrompts, 'applicationPrompt')
       .mockReturnValue(Promise.resolve(appName));
-    jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
 
     jest
       .spyOn(contextPrompts, 'contextPrompt')
@@ -123,7 +114,7 @@ describe('move generator', () => {
 
     jest
       .spyOn(projectPrompts, 'projectPrompt')
-      .mockImplementation(() => Promise.resolve(`${context}-${appName}`));
+      .mockImplementation(() => Promise.resolve(`${context}-${appName}-${mockAppSuffix}`));
 
     jest
       .spyOn(scopePrompts, 'default')
@@ -149,7 +140,7 @@ describe('move generator', () => {
         $schema: './node_modules/nx/schemas/workspace-schema.json',
         version: 2,
         projects: {
-          [`${context}-${appName}`]: `apps/${context}/${appName}`,
+          [`${context}-${appName}-${mockAppSuffix}`]: `apps/${context}/${appName}-${mockAppSuffix}`,
         },
       })
     );
@@ -160,9 +151,8 @@ describe('move generator', () => {
   });
 
   it('should call the moveGenerator if we want to move an application', async () => {
-    const prefix = 'prefix';
     const context = 'domain-a';
-    const appName = 'test-app';
+    const appName = 'test';
     const newAppName = 'new-test-app';
 
     jest
@@ -170,16 +160,12 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-    jest
       .spyOn(contextPrompts, 'contextPrompt')
       .mockImplementation(() => Promise.resolve(context));
 
     jest
       .spyOn(projectPrompts, 'projectPrompt')
-      .mockImplementation(() => Promise.resolve(`${context}-${appName}`));
+      .mockImplementation(() => Promise.resolve(`${context}-${appName}-${mockAppSuffix}`));
 
     jest
       .spyOn(scopePrompts, 'default')
@@ -207,7 +193,7 @@ describe('move generator', () => {
         $schema: './node_modules/nx/schemas/workspace-schema.json',
         version: 2,
         projects: {
-          [`${context}-${appName}`]: `apps/${context}/${appName}`,
+          [`${context}-${appName}-${mockAppSuffix}`]: `apps/${context}/${appName}-${mockAppSuffix}`,
         },
       })
     );
@@ -215,7 +201,7 @@ describe('move generator', () => {
     await move(tree, {});
 
     expect(nrwlWorkspaceGenerators.moveGenerator).toHaveBeenCalledWith(tree, {
-      projectName: `${context}-${appName}`,
+      projectName: `${context}-${appName}-${mockAppSuffix}`,
       destination: `${context}/${newAppName}`,
       updateImportPath: true,
       skipFormat: true,
@@ -223,9 +209,8 @@ describe('move generator', () => {
   });
 
   it('should format the files after moving apps', async () => {
-    const prefix = 'prefix';
     const context = 'domain-a';
-    const appName = 'test-app';
+    const appName = 'test';
     const newAppName = 'new-test-app';
 
     jest
@@ -233,16 +218,12 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-    jest
       .spyOn(contextPrompts, 'contextPrompt')
       .mockImplementation(() => Promise.resolve(context));
 
     jest
       .spyOn(projectPrompts, 'projectPrompt')
-      .mockImplementation(() => Promise.resolve(`${context}-${appName}`));
+      .mockImplementation(() => Promise.resolve(`${context}-${appName}-${mockAppSuffix}`));
 
     jest
       .spyOn(scopePrompts, 'default')
@@ -272,7 +253,7 @@ describe('move generator', () => {
         $schema: './node_modules/nx/schemas/workspace-schema.json',
         version: 2,
         projects: {
-          [`${context}-${appName}`]: `apps/${context}/${appName}`,
+          [`${context}-${appName}-${mockAppSuffix}`]: `apps/${context}/${appName}-${mockAppSuffix}`,
         },
       })
     );
@@ -282,9 +263,8 @@ describe('move generator', () => {
   });
 
   it('should validate the module boundaries after moving apps', async () => {
-    const prefix = 'prefix';
     const context = 'domain-a';
-    const appName = 'test-app';
+    const appName = 'test';
     const newAppName = 'new-test-app';
 
     jest
@@ -292,16 +272,12 @@ describe('move generator', () => {
       .mockReturnValue(Promise.resolve(appName));
 
     jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-    jest
       .spyOn(contextPrompts, 'contextPrompt')
       .mockImplementation(() => Promise.resolve(context));
 
     jest
       .spyOn(projectPrompts, 'projectPrompt')
-      .mockImplementation(() => Promise.resolve(`${context}-${appName}`));
+      .mockImplementation(() => Promise.resolve(`${context}-${appName}-${mockAppSuffix}`));
 
     jest.spyOn(validateModuleBoundaries, 'default');
 
@@ -333,7 +309,7 @@ describe('move generator', () => {
         $schema: './node_modules/nx/schemas/workspace-schema.json',
         version: 2,
         projects: {
-          [`${context}-${appName}`]: `apps/${context}/${appName}`,
+          [`${context}-${appName}-${mockAppSuffix}`]: `apps/${context}/${appName}-${mockAppSuffix}`,
         },
       })
     );
@@ -345,9 +321,8 @@ describe('move generator', () => {
   describe('Moving a library', () => {
 
     it('should call the scopePrompt if we want to move a library', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -357,16 +332,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -392,10 +363,12 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
+
+      tree.listChanges().forEach(e => console.log(e.path));
 
       tree.write(
         './angular.json',
@@ -403,7 +376,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -413,9 +386,8 @@ describe('move generator', () => {
     });
 
     it('should call the applicationPrompt if we want to move a app specific library', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -425,16 +397,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -460,7 +428,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -471,7 +439,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -481,9 +449,8 @@ describe('move generator', () => {
     });
 
     it('should call the typePrompt if no destination type was provided', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -493,16 +460,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -528,7 +491,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -539,7 +502,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -549,9 +512,8 @@ describe('move generator', () => {
     });
 
     it('should extract the libraries name', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -561,16 +523,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -596,7 +554,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -607,20 +565,19 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
 
       await move(tree, {});
       expect(extractNameUtils.extractName).toHaveBeenCalledWith(
-        `${context}-${scopeType}-${type}-${appName}`, ProjectTypes.LIBRARY);
+        `${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`, ProjectTypes.LIBRARY);
     });
 
     it('should call the move generator for libs', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -630,16 +587,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -665,7 +618,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -676,7 +629,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -684,7 +637,7 @@ describe('move generator', () => {
       await move(tree, {});
       expect(nrwlWorkspaceGenerators.moveGenerator).toHaveBeenCalledWith(
         tree, {
-          projectName: `${context}-${scopeType}-${type}-${appName}`,
+          projectName: `${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`,
           destination: `${context}/${scopeType}/${type}/${newAppName}`,
           updateImportPath: true,
           skipFormat: true,
@@ -692,9 +645,8 @@ describe('move generator', () => {
     });
 
     it('should update the ng-package.json for libraries', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -704,16 +656,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -739,7 +687,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -750,7 +698,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -760,9 +708,8 @@ describe('move generator', () => {
     });
 
     it('should format the files after we moved a library', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -772,16 +719,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -809,7 +752,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -820,7 +763,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );
@@ -830,9 +773,8 @@ describe('move generator', () => {
     });
 
     it('should validate the module boundaries after we moved a library', async () => {
-      const prefix = 'prefix';
       const context = 'domain-a';
-      const appName = 'test-app';
+      const appName = 'test';
       const scopeType = ScopeType.SHARED;
       const type = LibraryType.MODEL;
       const newAppName = 'new-app-name';
@@ -842,16 +784,12 @@ describe('move generator', () => {
         .mockReturnValue(Promise.resolve(appName));
 
       jest
-            .spyOn(configHelper, 'getPrefix')
-            .mockReturnValue(prefix);
-
-      jest
         .spyOn(contextPrompts, 'contextPrompt')
         .mockImplementation(() => Promise.resolve(context));
 
       jest
         .spyOn(projectPrompts, 'projectPrompt')
-        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}`));
+        .mockImplementation(() => Promise.resolve(`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`));
 
       jest
         .spyOn(scopePrompts, 'default')
@@ -881,7 +819,7 @@ describe('move generator', () => {
 
       await generateWorkspaceLibrary(tree, {
         context,
-        name: appName,
+        name: `${appName}-${mockAppSuffix}`,
         scopeType,
         type,
       });
@@ -892,7 +830,7 @@ describe('move generator', () => {
           $schema: './node_modules/nx/schemas/workspace-schema.json',
           version: 2,
           projects: {
-            [`${context}-${scopeType}-${type}-${appName}`]: `libs/${context}/${scopeType}/${type}/${appName}`,
+            [`${context}-${scopeType}-${type}-${appName}-${mockAppSuffix}`]: `libs/${context}/${scopeType}/${type}/${appName}-${mockAppSuffix}`,
           },
         })
       );

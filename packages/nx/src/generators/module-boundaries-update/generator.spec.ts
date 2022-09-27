@@ -7,10 +7,20 @@ import * as applicationPrompts from "../prompts/application.prompt";
 
 import updateModuleBoundaries from "./generator";
 
+const mockAppSuffix = 'app';
+const mockPrefix = 'my-company';
+
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')
   .mockImplementation(() => Promise.resolve());
 
+jest
+  .spyOn(configHelper, 'getPrefix')
+  .mockImplementation(() =>mockPrefix);
+
+jest
+  .spyOn(configHelper, 'getAppSuffix')
+  .mockImplementation(() => mockAppSuffix);
 
 const ENFORCE_MODULE_BOUNDARIES = '@nrwl/nx/enforce-module-boundaries';
 

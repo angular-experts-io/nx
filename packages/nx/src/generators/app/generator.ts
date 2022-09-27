@@ -1,7 +1,8 @@
+import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import { organizeImports } from 'import-conductor';
-import { moveGenerator } from '@nrwl/workspace/generators';
-import { applicationGenerator } from '@nrwl/angular/generators';
+import {organizeImports} from 'import-conductor';
+import {moveGenerator} from '@nrwl/workspace/generators';
+import {applicationGenerator} from '@nrwl/angular/generators';
 import {
   formatFiles,
   installPackagesTask,
@@ -10,23 +11,27 @@ import {
 } from '@nrwl/devkit';
 
 import updateModuleBoundaries from '../module-boundaries-update/generator';
-import {createConfigFileIfNonExisting, getContexts} from "../config/config.helper";
+import {createConfigFileIfNonExisting, getAppSuffix, getContexts, getPrefix} from "../config/config.helper";
 
-import { AppGeneratorOptions } from './schema';
+import {AppGeneratorOptions} from './schema';
 
 export default async function generateWorkspaceApp(
   tree: Tree,
   schema: AppGeneratorOptions
 ): Promise<() => void> {
   await createConfigFileIfNonExisting(tree);
-  await promptMissingSchemaProperties(tree, schema);
 
-  const { context, name, prefix } = schema;
+  const appSuffix = getAppSuffix(tree);
+  const prefix = getPrefix(tree);
 
-  validateName(name);
+  await promptMissingSchemaProperties(tree, schema, prefix, appSuffix);
+
+  const {context, name} = schema;
+
+  validateName(tree, name, appSuffix);
 
   await applicationGenerator(tree, {
-    name: `${context}/${name}`,
+    name: `${context}/${name}-${appSuffix}`,
     style: 'scss',
     routing: true,
     tags: `context:${context},type:app`,
@@ -35,20 +40,21 @@ export default async function generateWorkspaceApp(
   });
 
   await moveGenerator(tree, {
-    destination: `${context}/${name}-e2e`,
-    projectName: `${context}-${name}-e2e`,
+    destination: `${context}/${name}-${appSuffix}-e2e`,
+    projectName: `${context}-${name}-${appSuffix}-e2e`,
     updateImportPath: true,
   });
 
-  await updateProjectTags(tree, context, name);
+  await updateProjectTags(tree, context, name, appSuffix);
   await updatePackageJSONScripts(tree, context, name);
-  await updateModuleBoundaries(tree, { context, scope: `${name}` });
+  await updateModuleBoundaries(tree, {context, scope: `${name}-${appSuffix}`});
 
-  removeInitialNavigationConfig(tree, context, name);
-  removeWelcomeComponent(tree, context, name);
+  // TODO: can the arguments of context, name, appSuffix be extracted into a path variable?
+  removeInitialNavigationConfig(tree, context, name, appSuffix);
+  removeWelcomeComponent(tree, context, name, appSuffix);
 
   await formatFiles(tree);
-  await organizeAppModuleImportStatements(tree, context, name);
+  await organizeAppModuleImportStatements(tree, context, name, appSuffix);
 
   return () => {
     installPackagesTask(tree);
@@ -57,8 +63,16 @@ export default async function generateWorkspaceApp(
 
 async function promptMissingSchemaProperties(
   tree: Tree,
-  schema: AppGeneratorOptions
+  schema: AppGeneratorOptions,
+  prefix: string,
+  appSuffix: string
 ): Promise<void> {
+  console.log(
+    `Let's create an application, the final name will follow ${chalk.grey(
+      `@${prefix}/<context>-<name>-${appSuffix}`
+    )} pattern`
+  );
+
   if (!schema.context) {
     schema.context = (
       await inquirer.prompt([
@@ -84,13 +98,18 @@ async function promptMissingSchemaProperties(
   }
 }
 
-function validateName(name: string): void {
+function validateName(tree: Tree, name: string, appSuffix: string): void {
   if (name.includes(' ')) {
     throw new Error(
       `The app name "${name}" should not contain spaces. Please use "-" instead.`
     );
   }
 
+  if (name.endsWith('-rwc')) {
+    throw new Error(
+      `The app name "${name}" should not end with "${appSuffix}" as that will be appended automatically.`
+    );
+  }
   if (name.endsWith('-')) {
     throw new Error(`The app name "${name}" should not end with "-"`);
   }
@@ -99,9 +118,10 @@ function validateName(name: string): void {
 function removeInitialNavigationConfig(
   tree: Tree,
   context: string,
-  name: string
+  name: string,
+  appSuffix: string
 ): void {
-  const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
+  const modulePath = `apps/${context}/${name}-${appSuffix}/src/app/app.module.ts`;
   let moduleContent = tree.read(modulePath).toString();
   moduleContent = moduleContent.replace(
     ", { initialNavigation: 'enabledBlocking' }",
@@ -110,9 +130,8 @@ function removeInitialNavigationConfig(
   tree.write(modulePath, moduleContent);
 }
 
-function removeWelcomeComponent(tree: Tree, context: string, name: string): void {
-  // TODO - also remove it from the declarations array in AppModule
-  const srcPath = `apps/${context}/${name}/src/app/`;
+function removeWelcomeComponent(tree: Tree, context: string, name: string, appSuffix: string): void {
+  const srcPath = `apps/${context}/${name}-${appSuffix}/src/app/`;
   tree.delete(`${srcPath}nx-welcome.component.ts`);
 
   const modulePath = `${srcPath}/app.module.ts`;
@@ -141,10 +160,10 @@ function removeWelcomeComponent(tree: Tree, context: string, name: string): void
   tree.write(specPath, specContent);
 }
 
-async function updateProjectTags(tree: Tree, context: string, name: string): Promise<void> {
+async function updateProjectTags(tree: Tree, context: string, name: string, appSuffix: string): Promise<void> {
   await updateJson(
     tree,
-    `apps/${context}/${name}-e2e/project.json`,
+    `apps/${context}/${name}-${appSuffix}-e2e/project.json`,
     (projectJson) => {
       projectJson.tags = [`context:${context}`, 'type:e2e'];
       return projectJson;
@@ -164,22 +183,22 @@ export async function updatePackageJSONScripts(
     }
     packageJson.scripts[
       `serve:${projectName}:app`
-    ] = `nx serve --project ${projectName} -o`;
+      ] = `nx serve --project ${projectName} -o`;
     packageJson.scripts[
       `build:${projectName}`
-    ] = `nx build --project ${projectName}`;
+      ] = `nx build --project ${projectName}`;
     packageJson.scripts[
       `analyze:${projectName}`
-    ] = `nx build --project ${projectName} --stats-json && webpack-bundle-analyzer dist/apps/${context}/${name}/stats.json`;
+      ] = `nx build --project ${projectName} --stats-json && webpack-bundle-analyzer dist/apps/${context}/${name}/stats.json`;
     packageJson.scripts[
       `lint:${projectName}`
-    ] = `nx lint --project ${projectName} && nx stylelint --project ${projectName} --fix`;
+      ] = `nx lint --project ${projectName} && nx stylelint --project ${projectName} --fix`;
     packageJson.scripts[
       `test:${projectName}`
-    ] = `nx test --project ${projectName}`;
+      ] = `nx test --project ${projectName}`;
     packageJson.scripts[
       `e2e:${projectName}`
-    ] = `nx e2e --project ${projectName}-e2e`;
+      ] = `nx e2e --project ${projectName}-e2e`;
     return packageJson;
   });
 }
@@ -187,9 +206,10 @@ export async function updatePackageJSONScripts(
 async function organizeAppModuleImportStatements(
   tree: Tree,
   context: string,
-  name: string
+  name: string,
+  appSuffix: string
 ): Promise<void> {
-  const modulePath = `apps/${context}/${name}/src/app/app.module.ts`;
+  const modulePath = `apps/${context}/${name}-${appSuffix}/src/app/app.module.ts`;
   const appModuleContent = tree.read(modulePath).toString();
   const appModuleContentWithOrganizedImports = await organizeImports(
     appModuleContent

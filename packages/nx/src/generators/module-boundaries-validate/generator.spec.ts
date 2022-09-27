@@ -49,7 +49,7 @@ describe('module-boundaries-validate generator', () => {
   it('should throw an error if the context is missing in the project tags', async () => {
     const context = 'foo';
     const name = 'my-app';
-    const path = `apps/${context}/${name}`;
+    const path = `apps/${context}/${name}-${mockAppSuffix}`;
     const schema = {context, name};
     const wrongTags = ['type:app'];
 

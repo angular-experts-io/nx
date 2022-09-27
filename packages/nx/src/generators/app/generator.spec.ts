@@ -12,12 +12,24 @@ import * as configHelper from '../config/config.helper';
 
 import generateWorkspaceApp from './generator';
 
+const mockAppSuffix = 'app';
+const mockPrefix = 'my-company';
+
 jest
   .spyOn(configHelper, 'createConfigFileIfNonExisting')
   .mockImplementation(() => Promise.resolve());
+
 jest
   .spyOn(configHelper, 'getContexts')
   .mockImplementation(() => []);
+
+jest
+  .spyOn(configHelper, 'getPrefix')
+  .mockImplementation(() =>mockPrefix);
+
+jest
+  .spyOn(configHelper, 'getAppSuffix')
+  .mockImplementation(() => mockAppSuffix);
 
 jest.mock('@nrwl/angular/generators', () => {
   const actualModule = jest.requireActual('@nrwl/angular/generators');
@@ -49,8 +61,7 @@ describe('app generator', () => {
     it('should should check if a config file exists or not', async () => {
       const schema = {
         context: 'context',
-        name: 'name',
-        prefix: 'prefix',
+        name: 'name'
       };
       await generateWorkspaceApp(appTree, schema);
       expect(configHelper.createConfigFileIfNonExisting).toHaveBeenCalled();
@@ -140,12 +151,10 @@ describe('app generator', () => {
 
     it('should generate a new application with the correct schema', async () => {
       const context = 'my-context';
-      const prefix = 'my-prefix';
-      const name = 'my-awesome-app';
+      const name = 'coffee-recipes';
       const schema = {
         context,
         name,
-        prefix,
       }
       jest.spyOn(nrwlAngularGenerators, 'applicationGenerator');
 
@@ -154,24 +163,22 @@ describe('app generator', () => {
       expect(nrwlAngularGenerators.applicationGenerator).toHaveBeenCalledWith(
         appTree,
         {
-          name: `${context}/${name}`,
+          name: `${context}/${name}-${mockAppSuffix}`,
           style: 'scss',
           routing: true,
           tags: `context:${context},type:app`,
           standaloneConfig: true,
-          prefix: `${prefix}-${context}`,
+          prefix: `${mockPrefix}-${context}`,
         }
       );
     });
 
     it('should update the import path of the e2e project', async () => {
       const context = 'my-context';
-      const prefix = 'my-prefix';
-      const name = 'my-awesome-app';
+      const name = 'coffee-recipes';
       const schema = {
         context,
         name,
-        prefix,
       }
       jest.spyOn(nrwlWorkspaceGenerators, 'moveGenerator');
 
@@ -180,8 +187,8 @@ describe('app generator', () => {
       expect(nrwlWorkspaceGenerators.moveGenerator).toHaveBeenCalledWith(
         appTree,
         {
-          destination: `${context}/${name}-e2e`,
-          projectName: `${context}-${name}-e2e`,
+          destination: `${context}/${name}-${mockAppSuffix}-e2e`,
+          projectName: `${context}-${name}-${mockAppSuffix}-e2e`,
           updateImportPath: true,
         }
       );
@@ -197,12 +204,11 @@ describe('app generator', () => {
       const name = 'my-awesome-app';
       const schema = {
         context,
-        name,
-        prefix: 'prefix'
+        name
       };
 
       await generateWorkspaceApp(appTree, schema);
-      const e2eProjectJson = readJson(appTree, `apps/${context}/${name}-e2e/project.json`) as any;
+      const e2eProjectJson = readJson(appTree, `apps/${context}/${name}-${mockAppSuffix}-e2e/project.json`) as any;
       expect(e2eProjectJson.tags).toEqual([`context:${context}`, 'type:e2e']);
     });
 
@@ -313,15 +319,14 @@ describe('app generator', () => {
       const name = 'my-awesome-app';
       const schema = {
         context,
-        name,
-        prefix: 'my-awesome-prefix'
+        name
       };
 
       jest.spyOn(moduleBoundariesGenerator, 'default');
 
       await generateWorkspaceApp(appTree, schema);
       expect(moduleBoundariesGenerator.default).toHaveBeenCalledWith(
-        appTree, {context, scope: `${name}`}
+        appTree, {context, scope: `${name}-${mockAppSuffix}`}
       );
     });
   });
@@ -333,13 +338,12 @@ describe('app generator', () => {
       const name = 'my-awesome-name';
       const schema = {
         context,
-        name,
-        prefix: 'my-awesome-prefix'
+        name
       }
 
       await generateWorkspaceApp(appTree, schema);
 
-      const appModule = appTree.read(`apps/${context}/${name}/src/app/app.module.ts`).toString();
+      const appModule = appTree.read(`apps/${context}/${name}-${mockAppSuffix}/src/app/app.module.ts`).toString();
       expect(appModule).not.toContain('{ initialNavigation: \'enabledBlocking\' }');
     });
 
