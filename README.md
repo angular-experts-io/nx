@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [WIP: Epic nx workspace generators collections for maximal productivity!](#wip-epic-nx-workspace-generators-collections-for-maximal-productivity)
+  - [Getting started](#getting-started)
+    - [Installation (not yet possible - package isn't yet published)](#installation-not-yet-possible---package-isnt-yet-published)
+    - [Workspace schematics](#workspace-schematics)
+  - [Architecture](#architecture)
+    - [Module boundaries enforcements](#module-boundaries-enforcements)
+      - [Context](#context)
+    - [Library types](#library-types)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # WIP: Epic nx workspace generators collections for maximal productivity!
 
 > 👋 Welcome to Angular experts NX schematics

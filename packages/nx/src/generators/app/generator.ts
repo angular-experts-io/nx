@@ -49,7 +49,6 @@ export default async function generateWorkspaceApp(
   await updatePackageJSONScripts(tree, context, name);
   await updateModuleBoundaries(tree, {context, scope: `${name}-${appSuffix}`});
 
-  // TODO: can the arguments of context, name, appSuffix be extracted into a path variable?
   removeInitialNavigationConfig(tree, context, name, appSuffix);
   removeWelcomeComponent(tree, context, name, appSuffix);
 
