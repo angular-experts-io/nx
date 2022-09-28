@@ -1,7 +1,10 @@
 {
   "name": "@angular-experts/nx",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "bump-version": "rjp package.json version $VERSION",
     "copy:readme": "copyfiles ./README.md ./dist/packages/nx",
