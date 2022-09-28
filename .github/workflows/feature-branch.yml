@@ -5,7 +5,7 @@ on:
       - '*'
       - '*/*'
       - '**'
-      - '!master'
+      - '!main'
 jobs:
   CI:
     runs-on: ubuntu-latest
