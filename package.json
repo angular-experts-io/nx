@@ -1,6 +1,6 @@
 {
   "name": "@angular-experts/nx",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -8,9 +8,11 @@
   "scripts": {
     "bump-version": "rjp package.json version $VERSION",
     "copy:readme": "copyfiles ./README.md ./dist/packages/nx",
+    "copy:npmrc": "copyfiles ./.npmrc ./dist/packages/nx",
+    "copy:assets": "npm run copy:readme && npm run copy:npmrc",
     "commit": "git-cz",
     "start": "nx serve",
-    "build": "nx run nx:build && npm run copy:readme",
+    "build": "nx run nx:build && npm run copy:assets",
     "test": "nx run nx:test",
     "test:coverage": "nx run nx:test --codeCoverage --coverageReporters=lcov"
   },
