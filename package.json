@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
+    "bump-version": "rjp package.json version $VERSION",
     "commit": "git-cz",
     "start": "nx serve",
     "build": "nx run nx:build",
@@ -39,6 +40,7 @@
     "jest": "27.5.1",
     "nx": "14.1.7",
     "prettier": "^2.5.1",
+    "replace-json-property": "^1.8.0",
     "ts-jest": "27.1.4",
     "ts-node": "9.1.1",
     "tslib": "^2.0.0",
