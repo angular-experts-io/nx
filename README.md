@@ -71,7 +71,7 @@ In general, available contexts, scopes and types can be selected when running sc
 
 Context of the apps and libs, eg `SALES`, `SUPPLY`, `PURCHASE`. Logic within the context is in general available for reuse within the same context with some additional rules applying on lover levels with relation to `scope` and `type`.
 
-![Logo](./doc/architecture.svg)
+![Architecture overview](https://raw.githubusercontent.com/angular-experts-io/nx/main/doc/architecture.svg)
 
 ### Library types
 
