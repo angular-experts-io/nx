@@ -13,6 +13,8 @@ jobs:
           persist-credentials: false
       - name: Install Node & NPM
         uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
       - name: Install node_modules
         run: npm install
       - name: Test & Coverage
