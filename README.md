@@ -1,4 +1,4 @@
-# Epic nx workspace generators collections for maximal productivity!
+# NX workspace generators collections for Angular enterprise development & maximal productivity!
 
 ![Coveralls](https://img.shields.io/coveralls/github/angular-experts-io/nx)
 
@@ -8,8 +8,6 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [WIP: Epic nx workspace generators collections for maximal productivity!](#wip-epic-nx-workspace-generators-collections-for-maximal-productivity)
 
 - [Getting started](#getting-started)
   - [Installation (not yet possible - package isn't yet published)](#installation-not-yet-possible---package-isnt-yet-published)
@@ -24,15 +22,15 @@
 
 > 👋 Welcome to Angular experts NX schematics
 
-## What is this project about?
+## What is this project about?
 
 This project provides schematics to a clean, modern, and efficient monorepo approach.
 
-​	✅ automated tooling to preserve clean architecture
+✅ automated tooling to preserve clean architecture
 
-​	✅ automated tooling to generate application structure, just provide your implementation
+✅ automated tooling to generate application structure, just provide your implementation
 
-​	✅ **consistent**, **unified**, predictable and clean API of stack services, data access and UI components
+✅ **consistent**, **unified**, predictable and clean API of stack services, data access and UI components
 
 ## Getting started
 
@@ -75,10 +73,11 @@ Context of the apps and libs, eg `SALES`, `SUPPLY`, `PURCHASE`. Logic within the
 
 ### Library types
 
-- **feature-** - (lazy loaded Angular feature module) business logic / flow, has routing of its own with the corresponding container component (generated out of the box), feature module usualy contains implementation of components, services for that particular feature (generate them using `nx g service <service-name> --project <feature-project-name>`
-- **data-access-** - NgRx based data access (CRUD for API endpoints), should be always headless (no components) to be asily re-usable and composable in features
-- **ui-** - standalone (simple / view / presentational / dumb) UI component, eg calendar or toggle, should never import any service and communicate only using `@Input` and `@Output`
-- **util-** - any standalone Angular util logic, for validators, interceptors, guards, scheduler ... eg `util-form-validator-<valiator-name>` or `util-interceptor-api-key`
-- **util-fn-** - any standalone util logic (plain Typescript function), eg data transformation, query params handling, error object transform, ...
-- **model-** - simple (non Angular) library to define and expose typescript `interface`, `type`, `enum` and `const` definitions
+- **feature** &mdash; (lazy loaded Angular feature module) business logic / flow, has routing of its own with the corresponding container component (generated out of the box), feature module usualy contains implementation of components, services for that particular feature (generate them using `nx g service <service-name> --project <feature-project-name>`
+- **pattern** &mdash; feature, collection of components, data-access and utils...
+- **data-access** &mdash; NgRx based data access (CRUD for API endpoints), should be always headless (no components) to be asily re-usable and composable in features
+- **ui** &mdash; standalone (simple / view / presentational / dumb) UI component, eg calendar or toggle, should never import any service and communicate only using `@Input` and `@Output`
+- **util** &mdash; any standalone Angular util logic, for validators, interceptors, guards, scheduler ... eg `util-form-validator-<valiator-name>` or `util-interceptor-api-key`
+- **util-fn** &mdash; any standalone util logic (plain Typescript function), eg data transformation, query params handling, error object transform, ...
+- **model** &mdash; simple (non Angular) library to define and expose typescript `interface`, `type`, `enum` and `const` definitions
 
